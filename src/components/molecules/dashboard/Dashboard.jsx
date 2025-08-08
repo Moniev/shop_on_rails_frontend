@@ -68,80 +68,8 @@ const Dashboard = () => {
           )}
 
           <ul className="dashboard-sidebar__nav-list">
-            <li>
-              <Button
-                variant="sidebar-nav-item" 
-                onClick={() => handleNavLinkClick('/home')}
-              >
-                <FaHome className="text-cyan-700" />   
-                <a>Home</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/workflows')} 
-              >
-                <LuWorkflow className="text-cyan-700"/> 
-                <a>Workflows</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/organizations')} 
-              >
-                <FaBuilding className="text-cyan-700" />   
-                <a>Organizations</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/teams')} 
-              >
-                <RiTeamFill className="text-cyan-700"/>   
-                <a>Teams</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/profile')}
-              >
-                <FaUser className="text-cyan-700"/> 
-                <a>Profile</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/settings')}
-              >
-                <IoSettingsSharp className="text-cyan-700"/>   
-                <a>Settings</a>
-              </Button>
-            </li>
-            <li>
-              <Button
-                variant="sidebar-nav-item"
-                onClick={() => handleNavLinkClick('/subscriptions')} 
-              >
-                <MdPayments className="text-cyan-700"/>   
-                <a>Subscriptions</a>
-              </Button>
-            </li>
+          
           </ul>
-
-          <div className="dashboard-sidebar__logout-button-container">
-            <Button
-              onClick={handleLogout}
-              variant="secondary md"
-              className="w-full text-white font-bold py-2 px-4 rounded-md transition duration-300 ease-in-out"
-            >
-              Sign out
-            </Button>
-          </div>
         </div>
       </nav>
     </>
