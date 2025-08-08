@@ -1,0 +1,27 @@
+@use "./components/molecules/footer/Footer.scss" as *;
+@use "./components/molecules/dashboard/Dashboard.scss" as *;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+.main-content-wrapper {
+  transition: transform 0.3s ease-in-out; 
+}
+
+body.sidebar-open .main-content-wrapper {
+  transform: translateX(16rem); 
+}
+
+
+.footer {
+  width: 100%; 
+}
+
+@media (max-width: 768px) {
+    .footer {
+        transform: translateX(0) !important; 
+        width: 100vw; 
+    }
+}
+

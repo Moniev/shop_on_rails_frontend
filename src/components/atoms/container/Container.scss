@@ -1,0 +1,12 @@
+@use "../../../variables" as *;
+
+.cont {
+  &.row {
+    display: flex;
+    flex-direction: row !important;
+    gap: 1rem;
+  }
+  &.items-center {
+    align-items: center;
+  }
+}

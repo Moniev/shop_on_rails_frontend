@@ -1,0 +1,15 @@
+@use "../../../_variables.scss" as *;
+
+.logo {
+  display: flex;
+  span {
+    font-size: 2rem;
+    font-weight: 1000;
+    color: $black;
+    font-style: italic;
+    span {
+      font-size: 3rem;
+      color: $primary;
+    }
+  }
+}

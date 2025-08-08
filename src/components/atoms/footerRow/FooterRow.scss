@@ -1,0 +1,54 @@
+.chevron-icon {
+    margin-left: 5px;
+}
+
+.dropdown-content-row {
+    display: none;
+    flex-direction: row;
+    background: dropdown;
+    
+    a {
+        font-size: 2vh;
+        font-weight: bold;
+        color: rgb(56, 101, 109);
+        text-shadow: 0 0 12px rgba(47, 82, 88, 0.678);
+        text-decoration: none;
+        padding-right: 20px; 
+        display: flex; 
+        align-items: center;
+    }
+
+    a:hover {
+        color: rgb(16, 193, 224);
+        text-shadow: 0 0 10px rgb(23, 105, 119);
+    }
+
+    a.open {
+        display: flex; 
+    }
+}
+
+@media (min-width: 768px) {
+    .chevron-icon {
+        display: block; 
+    }
+    
+    .dropdown-content-row {
+        display: inline-flex; 
+    }
+}
+
+@media (max-width: 768px) {
+    .dropdown-content-row {
+        display: inline-flex; 
+
+        svg {
+            font-size: 2rem;
+        }
+        
+    
+        a {
+            padding-right: 30px; 
+        }
+    }
+  }

@@ -1,0 +1,76 @@
+@use "../../../variables" as *;
+
+.chevron-icon {
+    margin-left: 5px;
+    transition: transform 0.3s ease;
+    &.open {
+        transform: rotate(180deg);
+    }
+}
+
+.dropdown-section-col {
+    display: flex;
+    flex-direction: column;
+}
+
+.dropdown-content-col {
+    display: flex;
+    flex-direction: column;
+    opacity: 0; 
+    overflow: hidden; 
+    transition: max-height 0.3s ease, opacity 0.3s ease; 
+    border-radius: 8px;
+
+    a {
+        padding: 1px 2px ;
+        font-size: 1.25vh;
+        font-weight: bold;
+        display: block;
+        color: rgb(59, 130, 143);
+        text-shadow: 0 0 12px rgba(49, 96, 104, 0.678);
+        margin-top: 10px;
+        text-decoration: none;
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    a:hover {
+      color: rgb(16, 193, 224);
+      text-shadow: 0 0 12px rgba(16, 193, 224, 0.884);
+      text-decoration: none;
+    }
+
+    &.open {
+        max-height: 500px; 
+        opacity: 1; 
+    }
+}
+
+@media (min-width: 768px) {
+    .chevron-icon {
+        display: none; 
+    }
+
+    .dropdown-content-col { 
+        opacity: 1;
+        overflow: hidden;
+    }
+}
+
+@media (max-width: 768px) {
+    .chevron-icon {
+        display: block;
+    }
+    
+    .dropdown-content-col {
+        min-height: 0;
+        max-height: 0; 
+        opacity: 0; 
+        
+        a {
+            font-size: 1.5rem; 
+            margin-top: 10px;
+        }
+    }
+}
