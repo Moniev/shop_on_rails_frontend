@@ -1,4 +1,7 @@
 @use "../../../variables" as *;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 .chevron-icon {
     margin-left: 5px;
@@ -26,8 +29,8 @@
         font-size: 1.25vh;
         font-weight: bold;
         display: block;
-        color: rgb(165, 165, 165);
-        text-shadow: 0 0 20px rgba(47, 82, 88, 0.178);
+        color: $footer-standard-text-color;
+        text-shadow: $footer-standard-text-shadow;
         margin-top: 10px;
         text-decoration: none;
         &:hover {
@@ -36,8 +39,8 @@
     }
 
     a:hover {
-      color: rgb(224, 16, 33);
-      text-shadow: 0 0 12px rgba(224, 16, 61, 0.884);
+      color: $footer-standard-hover-text-color;
+      text-shadow: $footer-standard-hover-text-shadow;
       text-decoration: none;
     }
 

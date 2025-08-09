@@ -3,15 +3,17 @@ import Logo from "../../atoms/logo/Logo";
 import Button from "../../atoms/button/Button";
 import Container from "../../atoms/container/Container";
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom"; 
 import {  FaSearch, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { modalStore } from "../../../store/ModalStore";
 import "./Navbar.scss";
 
-const Navbar = () => {
+
+const Navbar = ({ onSignInClick, onSignUpClick }) => {
+  const { openModal } = modalStore();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
-  const navigate = useNavigate();
 
   const navLinks = [
     { text: "About", href: "/about"  },
@@ -20,23 +22,13 @@ const Navbar = () => {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-
-      if (currentScrollY <= 0) {
-        setIsVisible(true);
-      } else if (currentScrollY > lastScrollY) {
-        setIsVisible(false);
-      } else {
-        setIsVisible(true);
-      }
-
+      if (currentScrollY <= 0) setIsVisible(true);
+      else if (currentScrollY > lastScrollY) setIsVisible(false);
+      else setIsVisible(true);
       setLastScrollY(currentScrollY);
     };
-
     window.addEventListener("scroll", handleScroll);
-
-    return () => {
-      window.removeEventListener("scroll", handleScroll);
-    };
+    return () => window.removeEventListener("scroll", handleScroll);
   }, [lastScrollY]);
 
   const navbarClassName = `navbar ${!isVisible ? "navbar--hidden" : ""}`;
@@ -48,26 +40,20 @@ const Navbar = () => {
       </div>
 
       <div className="navbar__mobile-menu">
-        <Hamburger
-          isDropdownOpen={isDropdownOpen}
-          setDropdownOpen={setDropdownOpen}
-        />
+        <Hamburger isDropdownOpen={isDropdownOpen} setDropdownOpen={setDropdownOpen} />
         {isDropdownOpen && (
           <div className="navbar__dropdown">
             <div className="navbar__dropdown-grid">
               {navLinks?.map((link, index) => (
                 <Link to={link.href} key={index}>
-                  <div className="nav-item nav-item--mobile">
-                    {link.icon}
-                    <span>{link.text}</span>
-                  </div>
+                  <div className="nav-item nav-item--mobile">{link.text}</div>
                 </Link>
               ))}
               <Container>
-                <Button onClick={() => navigate("/register")} variant="secondary md">
+                <Button onClick={onSignUpClick} variant="secondary md">
                   <FaUserPlus className="mr-2 text-xl" />
                 </Button>
-                <Button onClick={() => navigate("/login")} variant="primary md">
+                <Button onClick={onSignInClick} variant="primary md">
                   <FaSignInAlt className="mr-2 text-xl" />
                 </Button>
               </Container>
@@ -79,19 +65,16 @@ const Navbar = () => {
       <div className="navbar__desktop-menu">
         {navLinks.map((link, index) => (
           <Link to={link.href} key={index}>
-            <div className="nav-item nav-item--desktop">
-              {link.icon}
-              <span>{link.text}</span>
-            </div>
+            <div className="nav-item nav-item--desktop"><span>{link.text}</span></div>
           </Link>
         ))}
         <div className="navbar__divider" />
-        <Button onClick={() => navigate("/sign-up")} variant="submit md">
-          <FaUserPlus className=""/>
+        <Button onClick={() => openModal('signIn')} variant="submit md">
+          <FaUserPlus className="mr-2"/>
           <span></span>
         </Button>
-        <Button onClick={() => navigate("/sign-in")} variant="submit md">
-          <FaSignInAlt className=""/>
+        <Button onClick={() => openModal('signUp')} variant="submit md">
+          <FaSignInAlt className="mr-2"/>
           <span></span>
         </Button>
       </div>

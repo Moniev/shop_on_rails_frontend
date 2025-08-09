@@ -86,7 +86,7 @@ import { create } from 'zustand';
 import { useApiStore } from './ApiStore';
 
 /** @type {import('zustand').StoreCreator<UserState>} */
-export const useUserStore = create((set) => ({
+export const userStore = create((set) => ({
   user: null,
   token: localStorage.getItem("authToken") || null,
   setUser: (user, token) => {

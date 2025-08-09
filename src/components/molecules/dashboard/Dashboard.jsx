@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useUserStore } from '../../../store/UserStore'; 
+import { userStore } from '../../../store/UserStore'; 
 import Hamburger from '../navbar/Hamburger';
 import './Dashboard.scss'; 
 
 const Dashboard = () => {
   const navigate = useNavigate();
-  const { user, clearUser } = useUserStore();
+  const { user, clearUser } = userStore();
   const [isOpen, setIsOpen] = useState(false); 
 
   const handleLogout = () => {

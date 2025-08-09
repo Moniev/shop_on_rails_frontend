@@ -2,7 +2,38 @@ $primary: #292a2b;
 $secondary: #696b6d;
 $black: #292828;
 $grey: #717070;
-$background-gray: #7E8299;
-$slate-blue: #5E6278;
+
+$success-color: rgb(97, 202, 123);
+$success-shadow-color: rgba(117, 236, 147, 0.664);
+
+$info-color: rgb(89, 155, 167);
+$info-shadow-color: rgba(103, 173, 185, 0.842);
+
+$info-hover-color: rgb(0, 217, 255);
+$info-shadow-color: rgb(3, 238, 255);
+
+$warning-color: rgba(0,0,0,0);
+$warning-shadow-color: rgba(0,0,0,0);
+
+$error-color: red;
+$error-shadow-color: red;
+
+$molecule-box-shadow: 1px 1px 24px -12px rgba(63, 64, 74, 1);
+
+$sidebar-dashboard-background: linear-gradient(180deg, #ffffff, #ffffff);
+
+$footer-background: linear-gradient(180deg, #ffffff, #ffffff);
+$footer-header-text-color: rgb(182, 61, 77);
+$footer-standard-text-color: rgb(165, 165, 165);
+$footer-standard-text-shadow: 0 0 12px rgba(255, 138, 140, 0.205);
+$footer-standard-hover-text-color: rgb(211, 20, 49);
+$footer-standard-hover-text-shadow: 0 0 12px rgba(224, 16, 61, 0.884);
+$button-background-color: rgb(230, 230, 230);
+$button-background-color-hover: rgb(207, 207, 207);
+
 $dropdown: #5e627800;
-$navbar-bg-color: #353434;
+
+$navbar-background: linear-gradient(180deg, #ffffff, #ffffff);
+
+$modal-primary: rgb(165, 165, 165);
+$modal-secondary: rgb(182, 61, 77);

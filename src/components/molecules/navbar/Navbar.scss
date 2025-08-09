@@ -11,8 +11,8 @@
   z-index: 10;
   width: calc(100% - 4rem);
   max-width: 1400px;
-  background: linear-gradient(180deg, #ffffff, #ffffff);
-  box-shadow: 1px 1px 49px -13px rgba(63, 64, 74, 1);
+  background: $navbar-background;
+  box-shadow: $molecule-box-shadow;
   border-radius: 2.5rem;
   margin-top: 1rem;
   padding: 0.5rem 1.5rem;
@@ -142,7 +142,7 @@
 
   .line {
     fill: none;
-    stroke: rgb(61, 164, 182);
+    stroke: $footer-header-text-color;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-width: 3;

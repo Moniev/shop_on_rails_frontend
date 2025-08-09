@@ -7,14 +7,14 @@
   z-index: 998; 
   padding: 0.75rem; 
   border-radius: 9999px;
-  background: linear-gradient(180deg, #bfc9ce, #bccbd1);
+  background: $sidebar-dashboard-background;
   color: white;
   transition: all 0.3s ease-in-out;
-  box-shadow: 1px 1px 49px -26px rgba(63, 64, 74, 1);
+  box-shadow: $molecule-box-shadow;
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 2px #4b5563, 0 0 0 4px white; 
+    box-shadow: $molecule-box-shadow; 
   }
 }
 
@@ -38,10 +38,9 @@
   top: 0;
   right: 0; 
   height: 100%;
-  background: linear-gradient(180deg, #aab3b8, #a5b2b8);
+  background: $sidebar-dashboard-background;
   border-top-left-radius: 2rem 2rem; 
   border-bottom-left-radius: 2rem 2rem; 
-  color: white;
   width: 20rem; 
   padding: 1rem; 
   z-index: 999; 
