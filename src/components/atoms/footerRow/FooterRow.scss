@@ -11,8 +11,8 @@
     a {
         font-size: 2vh;
         font-weight: bold;
-        color: rgb(56, 101, 109);
-        text-shadow: 0 0 12px rgba(47, 82, 88, 0.205);
+        color: rgb(165, 165, 165);
+        text-shadow: 0 0 12px rgba(255, 138, 140, 0.205);
         text-decoration: none;
         padding-right: 20px; 
         display: flex; 
@@ -20,8 +20,8 @@
     }
 
     a:hover {
-        color: rgb(16, 193, 224);
-        text-shadow: 0 0 10px rgb(23, 105, 119);
+        color: rgb(211, 20, 49);
+        text-shadow: 0 0 10px rgba(211, 20, 49, 0.484);
     }
 
     a.open {

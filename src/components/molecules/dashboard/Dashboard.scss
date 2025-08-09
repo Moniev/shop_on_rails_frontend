@@ -10,7 +10,7 @@
   background: linear-gradient(180deg, #bfc9ce, #bccbd1);
   color: white;
   transition: all 0.3s ease-in-out;
-  box-shadow: -45px 45px 75px -60px rgba(0, 0, 0, 0.856); 
+  box-shadow: 1px 1px 49px -26px rgba(63, 64, 74, 1);
 
   &:focus {
     outline: none;
@@ -57,7 +57,7 @@
     font-size: 1.25vh;
     font-weight: bold;
     display: block;
-    color: rgb(59, 130, 143);
+    color: rgb(143, 59, 76);
     text-shadow: 0 0 12px rgba(49, 96, 104, 0.678);
     text-decoration: none;
     &:hover {

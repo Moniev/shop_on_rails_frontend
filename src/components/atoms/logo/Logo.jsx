@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
+import logoImage from "../../../assets/logo.png"
 import "./Logo.scss";
 
 const Logo = ({ full = false }) => {
   return (
     <Link to="/" className="logo">
-      <img src="icons/logo.svg" width={50} />
+      <img src={logoImage} width={170} />
       {full && (
         <span>
           
