@@ -1,5 +1,4 @@
 import Container from "../../atoms/container/Container";
-import Footer from "../../molecules/footer/Footer";
 
 
 const Home = () => {
