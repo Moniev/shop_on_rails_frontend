@@ -69,9 +69,6 @@
  * @property {boolean} removed
  * @property {string} createdAt
  * @property {string} updatedAt
- * @property {number[]} subscriptionIds
- * @property {number[]} teamIds
- * @property {number[]} organizationIds
  * @property {UserEdges} edges
  */
 
