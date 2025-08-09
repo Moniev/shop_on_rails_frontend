@@ -26,15 +26,16 @@
 
 .language-menu {
     position: absolute;
-    margin-top: 20vh;
+    margin-top: 20.95vh;
     background-color: rgb(212, 207, 207);
-    min-height: 11vw;
-    max-height: 11vw;
+    min-height: 13vw;
+    max-height: 13vw;
     min-width: 11vw;
     max-width: 11vw;
-    border-radius: 1.25vh;
+    border-bottom-left-radius: 1.25vh;
+    border-bottom-right-radius: 1.25vh;
     color: rgb(56, 101, 109);
-    text-shadow: 0 0 12px rgba(47, 82, 88, 0.678);
+    text-shadow: 0 0 12px rgba(47, 82, 88, 0);
     display: flex; 
     flex-direction: column; 
     align-items: center; 
@@ -69,14 +70,14 @@
     font-size: 1.25vh;
     font-weight: bold;
     text-align: left;
-    width: calc(100% - 1rem);
+    width: calc(100% - 2rem);
     border-radius: 1rem;
-    margin-left: 50px;
+    margin-left: 5px;
 
     &:hover {
-      background: rgb(212, 207, 207);
+      background-color: rgb(205, 213, 214);
       color: rgb(20, 182, 211);
-      text-shadow: 0 0 15px rgba(14, 149, 173, 0.904);
+      text-shadow: 0 0 15px rgba(14, 149, 173, 0.26);
     }
 }
 

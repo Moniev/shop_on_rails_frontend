@@ -13,6 +13,7 @@ const Layout = () => {
 
   return (
     <div className="layout-wrapper">
+      <Navbar />
       <Dashboard />
       <div className="main-content-wrapper">
         <Container className="pt-32 px-4">

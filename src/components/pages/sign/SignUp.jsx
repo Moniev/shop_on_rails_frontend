@@ -6,7 +6,6 @@ const SignUp = () => {
   return (
     <Container className="flex flex-col gap-16 items-center">
       <SignUpContainer />
-      <Footer />
     </Container>
   );
 };

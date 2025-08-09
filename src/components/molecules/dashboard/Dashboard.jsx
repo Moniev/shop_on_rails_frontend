@@ -1,14 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../store/UserStore'; 
-import { IoSettingsSharp } from "react-icons/io5";
-import { FaHome, FaUser } from "react-icons/fa";
-import { FaBuilding } from "react-icons/fa6";
-import { LuWorkflow } from "react-icons/lu";
-import { MdPayments } from "react-icons/md";
-import { RiTeamFill } from "react-icons/ri";
-import { MdLogout } from "react-icons/md";
-import Button from '../../atoms/button/Button';
 import Hamburger from '../navbar/Hamburger';
 import './Dashboard.scss'; 
 
@@ -45,6 +37,7 @@ const Dashboard = () => {
         <div
           className="dashboard-overlay"
           onClick={toggleSidebar}
+          id="sidebar-overlay"
         ></div>
       )}
 
