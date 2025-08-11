@@ -2,13 +2,13 @@ import Button from "../../atoms/button/Button";
 import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { FaTimes, FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub, FaTwitter } from "react-icons/fa";
-import { modalStore } from "../../../store/ModalStore";
+import { useModalStore } from "../../../store/ModalStore";
 import * as Yup from "yup";
 import "./SignInForm.scss"; 
 
 const SignUpForm = () => {
   const navigate = useNavigate();
-  const { closeModal, openModal } = modalStore();
+  const { closeModal, openModal } = useModalStore();
 
   const formik = useFormik({
     initialValues: {

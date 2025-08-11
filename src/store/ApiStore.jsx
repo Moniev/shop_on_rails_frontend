@@ -16,8 +16,8 @@ import { create } from 'zustand';
  * @property {(headers: Object) => void} updateHeaders
  * @property {(debug: boolean) => void} setDebugMode
  * @property {() => void} resetConfig
- * @property {(key: string, params?: Object) => string} getEndpoint - Now supports dynamic params.
- * @property {(key: string, options?: Object, params?: Object) => Promise<Response>} fetchApi - Now supports dynamic params.
+ * @property {(key: string, params?: Object) => string} getEndpoint - Supports dynamic params.
+ * @property {(key: string, options?: Object, params?: Object) => Promise<Response>} fetchApi - Supports dynamic params.
  */
 
 const endpoints = {

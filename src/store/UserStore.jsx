@@ -170,15 +170,7 @@ export const useUserStore = create((set, get) => ({
       const json = await get()._handleApiResponse(fetchApi('usersMe', { method: 'GET' }));
       set({ currentUser: json.user, loading: false });
     } catch (error) {
-
-/** @type {import('zustand').StoreCreator<UserState>} */
-export const userStore = create((set) => ({
-  user: null,
-  token: localStorage.getItem("authToken") || null,
-  setUser: (user, token) => {
-    set({ user, token: token || null });
-    if (token) {
-      useApiStore.getState().setToken(token);
+      
     }
   },
 
@@ -189,7 +181,7 @@ export const userStore = create((set) => ({
       const json = await get()._handleApiResponse(fetchApi(endpoint, { method: 'GET' }));
       set({ users: json.users, pagination: json.meta, loading: false });
     } catch (error) {
-
+      
     }
   },
 
@@ -220,7 +212,7 @@ export const userStore = create((set) => ({
       const json = await get()._handleApiResponse(fetchApi('usersUpdate', { method: 'PATCH', body: JSON.stringify(data) }, { id: userId }));
       get()._updateUserState(json);
     } catch (error) {
-
+      
     }
   },
   
@@ -230,7 +222,7 @@ export const userStore = create((set) => ({
       const json = await get()._handleApiResponse(fetchApi('usersUpdateDetails', { method: 'PATCH', body: JSON.stringify(data) }, { id: userId }));
       get()._updateUserState(json);
     } catch (error) {
-
+      
     }
   },
 
@@ -240,7 +232,7 @@ export const userStore = create((set) => ({
       const json = await get()._handleApiResponse(fetchApi('usersUpdateLocation', { method: 'PATCH', body: JSON.stringify(data) }, { id: userId }));
       get()._updateUserState(json);
     } catch (error) {
-
+      
     }
   },
 
@@ -263,7 +255,7 @@ export const userStore = create((set) => ({
         loading: false,
       }));
     } catch (error) {
-
+      
     }
   },
 
@@ -274,7 +266,7 @@ export const userStore = create((set) => ({
       setToken(null); 
       get().clearCurrentUser(); 
     } catch (error) {
-
+      
       setToken(null);
       get().clearCurrentUser();
     }

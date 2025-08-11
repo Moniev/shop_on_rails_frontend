@@ -5,12 +5,12 @@ import Container from "../../atoms/container/Container";
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom"; 
 import {  FaSearch, FaSignInAlt, FaUserPlus } from "react-icons/fa";
-import { modalStore } from "../../../store/ModalStore";
+import { useModalStore } from "../../../store/ModalStore";
 import "./Navbar.scss";
 
 
 const Navbar = ({ onSignInClick, onSignUpClick }) => {
-  const { openModal } = modalStore();
+  const { openModal } = useModalStore();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);

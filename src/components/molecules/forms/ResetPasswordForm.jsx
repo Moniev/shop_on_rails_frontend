@@ -1,12 +1,12 @@
 import Button from "../../atoms/button/Button";
 import { useFormik } from "formik";
 import { FaTimes, FaEnvelope } from "react-icons/fa";
-import { modalStore } from "../../../store/ModalStore";
+import { useModalStore } from "../../../store/ModalStore";
 import * as Yup from "yup";
 import "./SignInForm.scss"; 
 
 const ResetPasswordForm = () => {
-  const { closeModal, openModal } = modalStore();
+  const { closeModal, openModal } = useModalStore();
 
   const formik = useFormik({
     initialValues: {
