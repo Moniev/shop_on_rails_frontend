@@ -1,3 +1,5 @@
+import { create } from 'zustand';
+
 /**
  * @typedef {Object} ApiConfig
  * @property {string} baseUrl
@@ -14,18 +16,53 @@
  * @property {(headers: Object) => void} updateHeaders
  * @property {(debug: boolean) => void} setDebugMode
  * @property {() => void} resetConfig
- * @property {(key: string) => string} getEndpoint
- * @property {(key: string, options: Object) => Promise<Response>} fetchApi
+ * @property {(key: string, params?: Object) => string} getEndpoint - Now supports dynamic params.
+ * @property {(key: string, options?: Object, params?: Object) => Promise<Response>} fetchApi - Now supports dynamic params.
  */
 
-import { create } from 'zustand';
-
 const endpoints = {
-    baseUrl: import.meta.env.VITE_API_ADDRESS,
-    sign: import.meta.env.VITE_API_ENDPOINT_SIGN,
-    signout: import.meta.env.VITE_API_ENDPOINT_LOGOUT,
-    user: import.meta.env.VITE_API_ENDPOINT_USER,
-    resetPassword: import.meta.env.VITE_API_ENDPOINT_RESET_PASSWORD,
+  baseUrl: import.meta.env.VITE_API_ADDRESS || 'http://localhost:3000/api/v1',
+
+  cartShow: '/cart/show',
+  cartAdd: '/cart/add',
+  cartRevoke: '/cart/revoke',
+  cartClear: '/cart/clear',
+  cartUpdate: '/cart/update',
+
+  ordersIndex: '/orders',                 
+  ordersMe: '/orders/me',                 
+  ordersShow: '/orders/:id',              
+  ordersCreate: '/orders',                
+  ordersUpdate: '/orders/:id',            
+  ordersCancel: '/orders/:id/cancel',     
+  ordersDestroy: '/orders/:id',
+
+  productsIndex: '/products',                 
+  productsShow: '/products/:id',              
+  productsCreate: '/products',                
+  productsUpdate: '/products/:id',            
+  productsDestroy: '/products/:id',           
+  productsLike: '/products/:id/like',         
+  productsRate: '/products/:id/rate',         
+  productsComment: '/products/:id/comment', 
+
+  paymentsIndex: '/payments',             
+  paymentsShow: '/payments/:id',          
+  paymentsCreate: '/payments',            
+  paymentsRetry: '/payments/:id/retry',
+
+  usersIndex: '/users',
+  usersShow: '/users/:id',
+  usersCreate: '/users',
+  usersUpdate: '/users/:id',
+  usersDestroy: '/users/:id',
+  usersMe: '/users/me',
+  usersLogout: '/users/logout',
+  usersUpdateDetails: '/users/:id/update_details',
+  usersUpdateLocation: '/users/:id/update_location',
+  usersUpdateEntrepreneur: '/users/:id/update_entrepreneur_details',
+  usersUpdateRole: '/users/:id/role',
+  usersFetchActions: '/users/:id/actions',
 };
 
 /** @type {import('zustand').StoreCreator<ApiState>} */
@@ -38,10 +75,12 @@ export const useApiStore = create((set, get) => ({
     },
     debugMode: false,
   },
+
   setBaseUrl: (baseUrl) =>
     set((state) => ({
       config: { ...state.config, baseUrl },
     })),
+
   setToken: (token) =>
     set((state) => ({
       config: {
@@ -53,14 +92,17 @@ export const useApiStore = create((set, get) => ({
         },
       },
     })),
+
   updateHeaders: (headers) =>
     set((state) => ({
       config: { ...state.config, headers: { ...state.config.headers, ...headers } },
     })),
+
   setDebugMode: (debugMode) =>
     set((state) => ({
       config: { ...state.config, debugMode },
     })),
+
   resetConfig: () =>
     set({
       config: {
@@ -72,31 +114,39 @@ export const useApiStore = create((set, get) => ({
         debugMode: false,
       },
     }),
-  getEndpoint: (key) => {
-    const endpoint = endpoints[key];
+
+  getEndpoint: (key, params = {}) => {
+    let endpoint = endpoints[key];
     if (!endpoint) {
       throw new Error(`Endpoint ${key} not found`);
+    }
+    for (const paramKey in params) {
+      endpoint = endpoint.replace(`:${paramKey}`, params[paramKey]);
     }
     return `${get().config.baseUrl}${endpoint}`;
   },
 
-  fetchApi: async (key, options = {}) => {
-    const { config } = get();
-    const endpoint = endpoints[key];
-    if (!endpoint) {
-      throw new Error(`Endpoint ${key} not found`);
-    }
-    const url = `${config.baseUrl}${endpoint}`;
+  fetchApi: async (key, options = {}, params = {}) => {
+    const { config, getEndpoint } = get();
+    const url = getEndpoint(key, params);
+
     if (config.debugMode) {
       console.log(`Fetching ${url} with options:`, options);
     }
+
+    const finalOptions = { ...options };
+    if (finalOptions.body instanceof FormData) {
+      delete finalOptions.headers['Content-Type'];
+    }
+
     const response = await fetch(url, {
-      ...options,
+      ...finalOptions,
       headers: {
         ...config.headers,
-        ...options.headers,
+        ...finalOptions.headers,
       },
     });
+
     if (config.debugMode) {
       console.log(`Response from ${url}:`, response);
     }
