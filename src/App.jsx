@@ -3,7 +3,6 @@ import Layout from "./components/organisms/layout/Layout";
 import Home from "./components/pages/home/Home";
 import "./App.scss";
 
-
 function App() {
   return (
     <BrowserRouter>

@@ -29,10 +29,10 @@ import { useApiStore } from './ApiStore';
 /**
  * @typedef {Object} CartActions
  * @property {() => Promise<void>} fetchCart - Fetches the current state of the cart from the server.
- * @property {(productId: number, quantity: number) => Promise<void>} addItem - Adds a product to the cart.
- * @property {(itemId: number, quantity: number) => Promise<void>} updateItem - Updates the quantity of an item in the cart.
- * @property {(itemId: number) => Promise<void>} removeItem - Removes an item from the cart.
- * @property {() => Promise<void>} clearCart - Clears the entire cart.
+ * @property {(productId: number, quantity: number) => Promise<boolean>} addItem - Adds a product to the cart.
+ * @property {(itemId: number, quantity: number) => Promise<boolean>} updateItem - Updates the quantity of an item in the cart.
+ * @property {(itemId: number) => Promise<boolean>} removeItem - Removes an item from the cart.
+ * @property {() => Promise<boolean>} clearCart - Clears the entire cart.
  */
 
 /**
@@ -48,78 +48,90 @@ export const useCartStore = create((set, get) => ({
   error: null,
   message: null,
 
-  /**
-   * Generic handler for API responses to update the state.
-   * @param {Promise<Response>} apiPromise 
-   */
-  _handleApiResponse: async (apiPromise) => {
+  _updateCartState: (response) => {
+    const cartData = response.data;
+    const summaryData = response.cart_summary;
+
+    set({
+      message: response.message || null,
+      ...(cartData && {
+        items: cartData.items || [],
+        total_amount: cartData.total_amount || 0,
+        items_count: cartData.items_count || 0,
+      }),
+      ...(summaryData && {
+        total_amount: summaryData.total_amount || 0,
+        items_count: summaryData.items_count || 0,
+      }),
+    });
+  },
+
+  _handleApiCall: async (apiCall) => {
     set({ loading: true, error: null, message: null });
     try {
-      const response = await apiPromise;
-      const jsonResponse = await response.json();
-
-      if (!response.ok || jsonResponse.errors) {
-        throw new Error(jsonResponse.errors || 'An API error occurred');
-      }
-      
-      const cartData = jsonResponse.data;
-      const summaryData = jsonResponse.cart_summary;
-
-      set({
-        loading: false,
-        message: jsonResponse.message || null,
-        ...(cartData && {
-          items: cartData.items || [],
-          total_amount: cartData.total_amount || 0,
-          items_count: cartData.items_count || 0,
-        }),
-        ...(summaryData && {
-            total_amount: summaryData.total_amount || 0,
-            items_count: summaryData.items_count || 0,
-        })
-      });
-
+      const response = await apiCall();
+      get()._updateCartState(response);
+      return response;
     } catch (error) {
-      set({ loading: false, error: error.message });
+      const errorMessages = error.errors || error.message || 'An unknown cart error occurred.';
+      set({ error: errorMessages });
+      throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
   fetchCart: async () => {
-    const { fetchApi } = useApiStore.getState();
-    await get()._handleApiResponse(fetchApi('cartShow', { method: 'GET' }));
+    const { client } = useApiStore.getState();
+    try {
+      await get()._handleApiCall(() => client.get('api/v1/cart/show'));
+    } catch (error) {
+    }
   },
 
   addItem: async (productId, quantity) => {
-    const { fetchApi } = useApiStore.getState();
-    await get()._handleApiResponse(
-      fetchApi('cartAdd', {
-        method: 'POST',
-        body: JSON.stringify({ product_id: productId, quantity: quantity }),
-      })
-    );
-    if (!get().error) {
-      await get().fetchCart();
+    const { client } = useApiStore.getState();
+    try {
+      await get()._handleApiCall(() => 
+        client.post('api/v1/cart/add', { product_id: productId, quantity: quantity })
+      );
+      return true;
+    } catch (error) {
+      return false;
+    }
+  },
+
+  updateItem: async (itemId, quantity) => {
+    const { client } = useApiStore.getState();
+    try {
+        await get()._handleApiCall(() => 
+            client.patch('api/v1/cart/update', { item_id: itemId, quantity: quantity })
+        );
+        return true;
+    } catch (error) {
+        return false;
     }
   },
 
   removeItem: async (itemId) => {
-    const { fetchApi } = useApiStore.getState();
-    await get()._handleApiResponse(
-      fetchApi('cartRevoke', {
-        method: 'DELETE',
-        body: JSON.stringify({ item_id: itemId }),
-      })
-    );
-    if (!get().error) {
-      await get().fetchCart();
+    const { client } = useApiStore.getState();
+    try {
+      await get()._handleApiCall(() => 
+        client.delete('api/v1/cart/revoke', { data: { item_id: itemId } })
+      );
+      return true;
+    } catch (error) {
+      return false;
     }
   },
 
   clearCart: async () => {
-    const { fetchApi } = useApiStore.getState();
-    await get()._handleApiResponse(fetchApi('cartClear', { method: 'DELETE' }));
-    if (!get().error) {
-        set({ items: [], items_count: 0, total_amount: 0 });
+    const { client } = useApiStore.getState();
+    try {
+      await get()._handleApiCall(() => client.delete('api/v1/cart/clear'));
+      return true;
+    } catch (error) {
+      return false;
     }
   },
 }));

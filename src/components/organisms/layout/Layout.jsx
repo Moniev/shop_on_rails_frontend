@@ -1,3 +1,4 @@
+import React from 'react';
 import { Outlet } from "react-router-dom";
 import Container from "../../atoms/container/Container";
 import Navbar from "../../molecules/navbar/Navbar";
@@ -12,20 +13,30 @@ import Modal from "../../atoms/modal/Modal";
 import { useModalStore } from "../../../store/ModalStore";
 import "./Layout.scss";
 
-
 const Layout = () => {
-  const { user } = useUserStore();
+  const currentUser = useUserStore((state) => state.currentUser);
   const { isOpen, content, closeModal } = useModalStore();
 
   return (
     <div className="layout-wrapper">
+       <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick={false}
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+            />
       <Navbar />
       <>
-        { user != null ? <Dashboard /> : <></>}
+        { currentUser != null ? <Dashboard /> : <></>}
       </>
       <div className="main-content-wrapper">
         <Container className="pt-32 px-4">
-          <ToastContainer />
           <Outlet />
         </Container>
         <Footer />

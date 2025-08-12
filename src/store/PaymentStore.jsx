@@ -46,7 +46,7 @@ import { useOrderStore } from './OrderStore';
  * @property {(page?: number) => Promise<void>} fetchPayments - Fetches a paginated list of all payments.
  * @property {(paymentId: number) => Promise<void>} fetchPayment - Fetches a single payment by its ID.
  * @property {(orderId: number, method: string) => Promise<Payment|undefined>} createPayment - Creates a new payment for an order.
- * @property {(paymentId: number) => Promise<void>} retryPayment - Retries a failed payment.
+ * @property {(paymentId: number) => Promise<boolean>} retryPayment - Retries a failed payment.
  * @property {() => void} clearSelectedPayment - Clears the selected payment from the state.
  */
 
@@ -54,12 +54,6 @@ import { useOrderStore } from './OrderStore';
  * @typedef {PaymentState & PaymentActions} PaymentStore
  */
 
-/**
- * Updates a payment within a list of payments.
- * @param {Payment[]} payments - The array of payments.
- * @param {Payment} updatedPayment - The payment with updated data.
- * @returns {Payment[]} A new array with the updated payment.
- */
 const updatePaymentInList = (payments, updatedPayment) => {
   const index = payments.findIndex(p => p.id === updatedPayment.id);
   if (index === -1) return payments;
@@ -77,33 +71,30 @@ export const usePaymentStore = create((set, get) => ({
   error: null,
   message: null,
 
-  _handleApiResponse: async (apiPromise) => {
+  _handleApiCall: async (apiCall) => {
     set({ loading: true, error: null, message: null });
     try {
-      const response = await apiPromise;
-      const jsonResponse = await response.json();
-
-      if (!response.ok || jsonResponse.errors) {
-        throw new Error(jsonResponse.errors || 'An API error occurred');
+      const response = await apiCall();
+      if (response.message) {
+        set({ message: response.message });
       }
-
-      return jsonResponse;
+      return response;
     } catch (error) {
-      set({ loading: false, error: error.message });
+      const errorMessages = error.errors || error.message || 'An unknown payment error occurred.';
+      set({ error: errorMessages });
       throw error;
+    } finally {
+      set({ loading: false });
     }
   },
 
   fetchPayments: async (page = 1) => {
-    const { fetchApi } = useApiStore.getState();
-    const queryParams = new URLSearchParams({ page: String(page) }).toString();
-    const endpoint = `paymentsIndex?${queryParams}`;
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi(endpoint, { method: 'GET' }));
+      const response = await get()._handleApiCall(() => client.get('api/v1/payments', { params: { page } }));
       set({
-        payments: json.payments,
-        pagination: json.meta,
-        loading: false,
+        payments: response.data.payments,
+        pagination: response.data.meta,
       });
     } catch (error) {
 
@@ -111,52 +102,49 @@ export const usePaymentStore = create((set, get) => ({
   },
 
   fetchPayment: async (paymentId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('paymentsShow', { method: 'GET' }, { id: paymentId }));
-      set({ selectedPayment: json.payment, loading: false });
+      const response = await get()._handleApiCall(() => client.get(`api/v1/payments/${paymentId}`));
+      set({ selectedPayment: response.data.payment });
     } catch (error) {
 
     }
   },
 
   createPayment: async (orderId, method) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     const body = { order_id: orderId, payment_method: method };
     try {
-      const json = await get()._handleApiResponse(fetchApi('paymentsCreate', { method: 'POST', body: JSON.stringify(body) }));
-      set({
-        selectedPayment: json.payment,
-        message: json.message,
-        loading: false
-      });
-
-      if (json.payment?.order_id) {
-        useOrderStore.getState().fetchOrder(json.payment.order_id);
+      const response = await get()._handleApiCall(() => client.post('api/v1/payments', body));
+      const newPayment = response.data.payment;
+      set({ selectedPayment: newPayment });
+      
+      if (newPayment?.order_id) {
+        useOrderStore.getState().fetchOrder(newPayment.order_id);
       }
-      return json.payment;
+      return newPayment;
     } catch (error) {
-
+      return undefined;
     }
   },
 
   retryPayment: async (paymentId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('paymentsRetry', { method: 'POST' }, { id: paymentId }));
-      const updatedPayment = json.payment;
+      const response = await get()._handleApiCall(() => client.post(`api/v1/payments/${paymentId}/retry`));
+      const updatedPayment = response.data.payment;
+
       set(state => ({
         selectedPayment: state.selectedPayment?.id === updatedPayment.id ? updatedPayment : state.selectedPayment,
         payments: updatePaymentInList(state.payments, updatedPayment),
-        message: json.message,
-        loading: false,
       }));
       
       if (updatedPayment.order_id) {
           useOrderStore.getState().fetchOrder(updatedPayment.order_id);
       }
+      return true;
     } catch (error) {
-      
+      return false;
     }
   },
 

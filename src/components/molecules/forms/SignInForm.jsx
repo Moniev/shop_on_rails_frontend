@@ -1,14 +1,17 @@
 import Button from "../../atoms/button/Button";
-import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { FaTimes, FaEnvelope, FaLock, FaGoogle, FaGithub, FaTwitter } from "react-icons/fa";
 import { useModalStore } from "../../../store/ModalStore";
+import { useAuthStore } from "../../../store/AuthStore";
+import { toast } from 'react-toastify';
 import * as Yup from "yup";
 import "./SignInForm.scss";
 
 const SignInForm = () => {
-  const navigate = useNavigate();
   const { closeModal, openModal } = useModalStore();
+  const login = useAuthStore((state) => state.login);
+  const loading = useAuthStore((state) => state.loading);
+  const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
 
   const formik = useFormik({
     initialValues: {
@@ -25,13 +28,26 @@ const SignInForm = () => {
         .required("Password is required"),
       rememberMe: Yup.boolean(),
     }),
-    onSubmit: (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting }) => {
+      const success = await login({
+        mail: values.email,
+        password: values.password,
+      });
+      
+      if (success) {
+        toast.success("Logged in successfully!");
+        closeModal(); 
+      } else {
+        const apiError = useAuthStore.getState().error;
+        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Please check your credentials.";
+        toast.error(errorMessage);
+      }
       setSubmitting(false);
-      closeModal(); 
     },
   });
 
   const handleSocialLogin = (provider) => {
+    console.log(`Logging in with ${provider}`);
   };
 
   const handleSwitchToSignUp = () => {
@@ -46,6 +62,7 @@ const SignInForm = () => {
     const { name } = e.target;
     formik.setFieldError(name, '');
     formik.setFieldTouched(name, false, false);
+    clearAuthStatus();
   };
 
   const getIconClassName = (field) => {
@@ -128,9 +145,8 @@ const SignInForm = () => {
             </a>
         </div>
 
-
-        <Button type="submit" variant="submit" disabled={formik.isSubmitting}>
-          Sign In
+        <Button type="submit" variant="submit" disabled={formik.isSubmitting || loading}>
+          {loading ? 'Signing In...' : 'Sign In'}
         </Button>
       </form>
 

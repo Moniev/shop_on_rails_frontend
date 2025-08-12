@@ -2,11 +2,16 @@ import Button from "../../atoms/button/Button";
 import { useFormik } from "formik";
 import { FaTimes, FaEnvelope } from "react-icons/fa";
 import { useModalStore } from "../../../store/ModalStore";
+import { useAuthStore } from "../../../store/AuthStore";
+import { toast } from 'react-toastify'; 
 import * as Yup from "yup";
 import "./SignInForm.scss"; 
 
 const ResetPasswordForm = () => {
   const { closeModal, openModal } = useModalStore();
+  const requestPasswordReset = useAuthStore((state) => state.requestPasswordReset);
+  const loading = useAuthStore((state) => state.loading);
+  const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
 
   const formik = useFormik({
     initialValues: {
@@ -17,9 +22,17 @@ const ResetPasswordForm = () => {
         .email("Invalid email address")
         .required("Email is required"),
     }),
-    onSubmit: (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      const success = await requestPasswordReset(values.email);
+      if (success) {
+        toast.success("Reset link sent! Please check your email.");
+        resetForm();
+      } else {
+        const apiError = useAuthStore.getState().error;
+        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Failed to send reset link. Please try again.";
+        toast.error(errorMessage);
+      }
       setSubmitting(false);
-      closeModal();
     },
   });
 
@@ -27,6 +40,7 @@ const ResetPasswordForm = () => {
     const { name } = e.target;
     formik.setFieldError(name, '');
     formik.setFieldTouched(name, false, false);
+    clearAuthStatus(); 
   };
 
   const handleSwitchToSignIn = () => {
@@ -52,7 +66,11 @@ const ResetPasswordForm = () => {
         <FaTimes />
       </Button>
       <h2 className="sign-in-form__title">Reset Password</h2>
+
       <form onSubmit={formik.handleSubmit} className="sign-in-form__form">
+        <p className="sign-in-form__description">
+          Enter your email address and we will send you a link to reset your password.
+        </p>
         <div className="sign-in-form__group">
           <label htmlFor="email" className="sign-in-form__label">
             Email
@@ -73,8 +91,8 @@ const ResetPasswordForm = () => {
           </div>
         </div>
 
-        <Button type="submit" variant="submit" disabled={formik.isSubmitting}>
-          Send!
+        <Button type="submit" variant="submit" disabled={formik.isSubmitting || loading}>
+          {loading ? 'Sending...' : 'Send Reset Link'}
         </Button>
       </form>
 

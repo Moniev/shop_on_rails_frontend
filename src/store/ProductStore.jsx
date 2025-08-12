@@ -61,11 +61,11 @@ import { useApiStore } from './ApiStore';
  * @property {(page?: number, otherParams?: Object) => Promise<void>} fetchProducts - Fetches a paginated list of products.
  * @property {(productId: number) => Promise<void>} fetchProduct - Fetches a single product by its ID.
  * @property {(formData: FormData) => Promise<Product|undefined>} createProduct - Creates a new product.
- * @property {(productId: number, formData: FormData) => Promise<void>} updateProduct - Updates an existing product.
- * @property {(productId: number) => Promise<void>} deleteProduct - Deletes a product.
- * @property {(productId: number) => Promise<void>} likeProduct - Likes/unlikes a product.
- * @property {(productId: number, rating: number) => Promise<void>} rateProduct - Rates a product.
- * @property {(productId: number, content: string, parentId?: number) => Promise<void>} commentOnProduct - Adds a comment to a product.
+ * @property {(productId: number, formData: FormData) => Promise<boolean>} updateProduct - Updates an existing product.
+ * @property {(productId: number) => Promise<boolean>} deleteProduct - Deletes a product.
+ * @property {(productId: number) => Promise<boolean>} likeProduct - Likes/unlikes a product.
+ * @property {(productId: number, rating: number) => Promise<boolean>} rateProduct - Rates a product.
+ * @property {(productId: number, content: string, parentId?: number) => Promise<boolean>} commentOnProduct - Adds a comment to a product.
  * @property {() => void} clearSelectedProduct - Clears the selected product from the state.
  */
 
@@ -73,12 +73,6 @@ import { useApiStore } from './ApiStore';
  * @typedef {ProductState & ProductActions} ProductStore
  */
 
-/**
- * Updates a product within a list of products.
- * @param {Product[]} products - The array of products.
- * @param {Product} updatedProduct - The product with updated data.
- * @returns {Product[]} A new array with the updated product.
- */
 const updateProductInList = (products, updatedProduct) => {
   const index = products.findIndex(p => p.id === updatedProduct.id);
   if (index === -1) return products;
@@ -96,135 +90,118 @@ export const useProductStore = create((set, get) => ({
   error: null,
   message: null,
 
-  _handleApiResponse: async (apiPromise) => {
+  _handleApiCall: async (apiCall) => {
     set({ loading: true, error: null, message: null });
     try {
-      const response = await apiPromise;
-      const jsonResponse = await response.json();
-
-      if (!response.ok) {
-        throw new Error(jsonResponse.message || 'An API error occurred');
+      const response = await apiCall();
+      if (response.message) {
+        set({ message: response.message });
       }
-
-      return jsonResponse;
+      return response;
     } catch (error) {
-      set({ loading: false, error: error.message });
+      const errorMessages = error.errors || error.message || 'An unknown product error occurred.';
+      set({ error: errorMessages });
       throw error;
+    } finally {
+      set({ loading: false });
     }
+  },
+  
+  _updateProductState: (updatedProduct) => {
+    set(state => ({
+        selectedProduct: state.selectedProduct?.id === updatedProduct.id ? updatedProduct : state.selectedProduct,
+        products: updateProductInList(state.products, updatedProduct),
+      }));
   },
 
   fetchProducts: async (page = 1, otherParams = {}) => {
-    const { fetchApi } = useApiStore.getState();
-    const queryParams = new URLSearchParams({ page, ...otherParams }).toString();
-    const endpoint = `productsIndex?${queryParams}`;
-
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi(endpoint, { method: 'GET' }));
+      const response = await get()._handleApiCall(() => client.get('api/v1/products', { params: { page, ...otherParams } }));
       set({
-        products: json.products,
-        pagination: json.meta,
-        loading: false
+        products: response.data.products,
+        pagination: response.data.meta,
       });
     } catch (error) {
-
+      
     }
   },
 
   fetchProduct: async (productId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsShow', { method: 'GET' }, { id: productId }));
-      set({ selectedProduct: json, loading: false });
+      const response = await get()._handleApiCall(() => client.get(`api/v1/products/${productId}`));
+      set({ selectedProduct: response.data.product });
     } catch (error) {
-
+     
     }
   },
 
   createProduct: async (formData) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsCreate', { method: 'POST', body: formData }));
-      set({ message: json.message, loading: false });
-      return json.product;
+      const response = await get()._handleApiCall(() => client.post('api/v1/products', formData));
+      return response.data.product;
     } catch (error) {
-
+      return undefined;
     }
   },
 
   updateProduct: async (productId, formData) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsUpdate', { method: 'PATCH', body: formData }, { id: productId }));
-      const updatedProduct = json.product;
-      set(state => ({
-        selectedProduct: state.selectedProduct?.id === updatedProduct.id ? updatedProduct : state.selectedProduct,
-        products: updateProductInList(state.products, updatedProduct),
-        message: json.message,
-        loading: false
-      }));
+      const response = await get()._handleApiCall(() => client.patch(`api/v1/products/${productId}`, formData));
+      get()._updateProductState(response.data.product);
+      return true;
     } catch (error) {
-
+      return false;
     }
   },
 
   deleteProduct: async (productId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsDestroy', { method: 'DELETE' }, { id: productId }));
+      await get()._handleApiCall(() => client.delete(`api/v1/products/${productId}`));
       set(state => ({
         products: state.products.filter(p => p.id !== productId),
-        message: json.message,
-        loading: false
       }));
+      return true;
     } catch (error) {
-
+      return false;
     }
   },
 
   likeProduct: async (productId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsLike', { method: 'POST' }, { id: productId }));
-      const updatedProduct = json.product;
-      set(state => ({
-        selectedProduct: state.selectedProduct?.id === updatedProduct.id ? updatedProduct : state.selectedProduct,
-        products: updateProductInList(state.products, updatedProduct),
-        message: json.message,
-        loading: false
-      }));
+      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/like`));
+      get()._updateProductState(response.data.product);
+      return true;
     } catch (error) {
-
+      return false;
     }
   },
 
   rateProduct: async (productId, rating) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsRate', { method: 'POST', body: JSON.stringify({ rating }) }, { id: productId }));
-      const updatedProduct = json.product;
-      set(state => ({
-        selectedProduct: state.selectedProduct?.id === updatedProduct.id ? updatedProduct : state.selectedProduct,
-        products: updateProductInList(state.products, updatedProduct),
-        message: json.message,
-        loading: false
-      }));
+      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/rate`, { rating }));
+      get()._updateProductState(response.data.product);
+      return true;
     } catch (error) {
+      return false;
     }
   },
 
   commentOnProduct: async (productId, content, parentId) => {
-    const { fetchApi } = useApiStore.getState();
+    const { client } = useApiStore.getState();
     const body = { content, parent_id: parentId };
     try {
-      const json = await get()._handleApiResponse(fetchApi('productsComment', { method: 'POST', body: JSON.stringify(body) }, { id: productId }));
-      const updatedProduct = json.product;
-      set(state => ({
-        selectedProduct: state.selectedProduct?.id === updatedProduct.id ? updatedProduct : state.selectedProduct,
-        products: updateProductInList(state.products, updatedProduct),
-        message: json.message,
-        loading: false
-      }));
+      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/comment`, body));
+      get()._updateProductState(response.data.product);
+      return true;
     } catch (error) {
+      return false;
     }
   },
 

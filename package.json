@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
+    "axios": "^1.11.0",
     "classnames": "^2.5.1",
     "formik": "^2.4.6",
     "plugin-react": "^0.0.1-security",

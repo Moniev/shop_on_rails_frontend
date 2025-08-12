@@ -1,20 +1,26 @@
 import Button from "../../atoms/button/Button";
-import { useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { FaTimes, FaEnvelope, FaLock, FaUser, FaGoogle, FaGithub, FaTwitter } from "react-icons/fa";
 import { useModalStore } from "../../../store/ModalStore";
+import { useAuthStore } from "../../../store/AuthStore";
+import { toast } from 'react-toastify';
 import * as Yup from "yup";
 import "./SignInForm.scss"; 
 
+
 const SignUpForm = () => {
-  const navigate = useNavigate();
   const { closeModal, openModal } = useModalStore();
+
+  const register = useAuthStore((state) => state.register);
+  const loading = useAuthStore((state) => state.loading);
+  const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
 
   const formik = useFormik({
     initialValues: {
       name: "",
       email: "",
       password: "",
+      passwordConfirmation: "", 
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Name is required"),
@@ -24,10 +30,32 @@ const SignUpForm = () => {
       password: Yup.string()
         .min(8, "Password must be at least 8 characters")
         .required("Password is required"),
+      passwordConfirmation: Yup.string()
+        .oneOf([Yup.ref('password'), null], "Passwords must match")
+        .required("Password confirmation is required"),
     }),
-    onSubmit: (values, { setSubmitting }) => {
+    onSubmit: async (values, { setSubmitting, resetForm }) => {
+      const payload = {
+        mail: values.email,
+        password: values.password,
+        password_confirmation: values.passwordConfirmation,
+        user_detail_attributes: {
+          name: values.name,
+        },
+      };
+
+      const success = await register(payload);
+
+      if (success) {
+        toast.success("Account created! Please check your email to activate it.");
+        resetForm();
+      } else {
+        const apiError = useAuthStore.getState().error;
+        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Registration failed. Please try again.";
+        toast.error(errorMessage);
+      }
+      
       setSubmitting(false);
-      closeModal(); 
     },
   });
 
@@ -42,6 +70,7 @@ const SignUpForm = () => {
     const { name } = e.target;
     formik.setFieldError(name, '');
     formik.setFieldTouched(name, false, false);
+    clearAuthStatus();
   };
 
   const getIconClassName = (field) => {
@@ -63,6 +92,7 @@ const SignUpForm = () => {
         <FaTimes />
       </Button>
       <h2 className="sign-in-form__title">Sign Up</h2>
+
       <form onSubmit={formik.handleSubmit} className="sign-in-form__form">
         <div className="sign-in-form__group">
           <label htmlFor="name" className="sign-in-form__label">
@@ -124,8 +154,28 @@ const SignUpForm = () => {
           </div>
         </div>
 
-        <Button type="submit" variant="submit" disabled={formik.isSubmitting}>
-          Create Account
+        <div className="sign-in-form__group">
+          <label htmlFor="passwordConfirmation" className="sign-in-form__label">
+            Confirm Password
+          </label>
+          <div className="sign-in-form__input-wrapper">
+            <FaLock className={`sign-in-form__input-icon ${getIconClassName('passwordConfirmation')}`} />
+            <input
+              type="password"
+              name="passwordConfirmation"
+              id="passwordConfirmation"
+              className={`sign-in-form__input ${getIconClassName('passwordConfirmation')}`}
+              placeholder={formik.touched.passwordConfirmation && formik.errors.passwordConfirmation ? formik.errors.passwordConfirmation : "Confirm your password"}
+              value={formik.values.passwordConfirmation}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              onFocus={handleFocus} 
+            />
+          </div>
+        </div>
+
+        <Button type="submit" variant="submit" disabled={formik.isSubmitting || loading}>
+          {loading ? 'Creating Account...' : 'Create Account'}
         </Button>
       </form>
 
