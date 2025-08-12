@@ -29,6 +29,8 @@ apiClient.interceptors.response.use(
     if (error.response && error.response.status === 401) {
       const { useAuthStore } = await import('../store/AuthStore'); 
       useAuthStore.getState().logout();
+    } else if (error.response && error.response.status === 429) {
+      toast.error('Please wait a moment before trying again.');
     }
     
     return Promise.reject(error.response ? error.response.data : error);

@@ -77,14 +77,15 @@ export const useAuthStore = create((set, get) => ({
   logout: async () => {
     const { client, setToken } = useApiStore.getState();
     const { clearCurrentUser } = useUserStore.getState();
+    
+    setToken(null);
+    clearCurrentUser();
+    set({ message: 'Successfully logged out.' });
+
     try {
+
       await client.post('api/v1/users/logout');
     } catch (error) {
-      console.error("Logout API call failed, proceeding with client-side cleanup.", error);
-    } finally {
-      setToken(null);
-      clearCurrentUser();
-      set({ message: 'Successfully logged out.' });
     }
   },
 
