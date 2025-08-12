@@ -84,7 +84,7 @@ export const useCartStore = create((set, get) => ({
   fetchCart: async () => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => client.get('api/v1/cart/show'));
+      await get()._handleApiCall(() => client.get('/cart/show'));
     } catch (error) {
     }
   },
@@ -93,7 +93,7 @@ export const useCartStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       await get()._handleApiCall(() => 
-        client.post('api/v1/cart/add', { product_id: productId, quantity: quantity })
+        client.post('/cart/add', { product_id: productId, quantity: quantity })
       );
       return true;
     } catch (error) {
@@ -105,7 +105,7 @@ export const useCartStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
         await get()._handleApiCall(() => 
-            client.patch('api/v1/cart/update', { item_id: itemId, quantity: quantity })
+            client.patch('/cart/update', { item_id: itemId, quantity: quantity })
         );
         return true;
     } catch (error) {
@@ -117,7 +117,7 @@ export const useCartStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       await get()._handleApiCall(() => 
-        client.delete('api/v1/cart/revoke', { data: { item_id: itemId } })
+        client.delete('/cart/revoke', { data: { item_id: itemId } })
       );
       return true;
     } catch (error) {
@@ -128,7 +128,7 @@ export const useCartStore = create((set, get) => ({
   clearCart: async () => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => client.delete('api/v1/cart/clear'));
+      await get()._handleApiCall(() => client.delete('/cart/clear'));
       return true;
     } catch (error) {
       return false;

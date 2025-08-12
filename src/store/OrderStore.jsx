@@ -105,17 +105,17 @@ export const useOrderStore = create((set, get) => ({
   },
 
   fetchOrders: async (page = 1) => {
-    await get()._fetchOrderList('api/v1/orders', page);
+    await get()._fetchOrderList('/orders', page);
   },
 
   fetchMyOrders: async (page = 1) => {
-    await get()._fetchOrderList('api/v1/orders/me', page);
+    await get()._fetchOrderList('/orders/me', page);
   },
 
   fetchOrder: async (orderId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.get(`api/v1/orders/${orderId}`));
+      const response = await get()._handleApiCall(() => client.get(`/orders/${orderId}`));
       set({ selectedOrder: response.data.order });
     } catch (error) {
     
@@ -125,7 +125,7 @@ export const useOrderStore = create((set, get) => ({
   createOrder: async () => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post('api/v1/orders'));
+      const response = await get()._handleApiCall(() => client.post('/orders'));
       set({ selectedOrder: response.data.order });
       return response.data.order;
     } catch (error) {
@@ -143,7 +143,7 @@ export const useOrderStore = create((set, get) => ({
   updateOrder: async (orderId, data) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.patch(`api/v1/orders/${orderId}`, data));
+      const response = await get()._handleApiCall(() => client.patch(`/orders/${orderId}`, data));
       get()._updateAndSetOrder(response.data.order);
       return true;
     } catch (error) {
@@ -154,7 +154,7 @@ export const useOrderStore = create((set, get) => ({
   cancelOrder: async (orderId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post(`api/v1/orders/${orderId}/cancel`));
+      const response = await get()._handleApiCall(() => client.post(`/orders/${orderId}/cancel`));
       get()._updateAndSetOrder(response.data.order);
       return true;
     } catch (error) {
@@ -165,7 +165,7 @@ export const useOrderStore = create((set, get) => ({
   deleteOrder: async (orderId) => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => client.delete(`api/v1/orders/${orderId}`));
+      await get()._handleApiCall(() => client.delete(`/orders/${orderId}`));
       set(state => ({
         orders: state.orders.filter(o => o.id !== orderId),
       }));

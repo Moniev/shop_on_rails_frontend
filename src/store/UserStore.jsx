@@ -176,7 +176,7 @@ export const useUserStore = create(
       fetchCurrentUser: async () => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.get('api/v1/users/me'));
+          const response = await get()._handleApiCall(() => client.get('/users/me'));
           set({ currentUser: response.data.user });
         } catch (error) {
           
@@ -186,7 +186,7 @@ export const useUserStore = create(
       fetchUsers: async (page = 1) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.get('api/v1/users', { params: { page } }));
+          const response = await get()._handleApiCall(() => client.get('/users', { params: { page } }));
           set({ users: response.data.users, pagination: response.data.meta });
         } catch (error) {
           
@@ -196,7 +196,7 @@ export const useUserStore = create(
       fetchUser: async (userId) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.get(`api/v1/users/${userId}`));
+          const response = await get()._handleApiCall(() => client.get(`/users/${userId}`));
           set({ selectedUser: response.data.user });
         } catch (error) {
           
@@ -206,7 +206,7 @@ export const useUserStore = create(
       fetchUserActions: async (userId, page = 1) => {
         const { client } = useApiStore.getState();
         try {
-            const response = await get()._handleApiCall(() => client.get(`api/v1/users/${userId}/actions`, { params: { page } }));
+            const response = await get()._handleApiCall(() => client.get(`/users/${userId}/actions`, { params: { page } }));
             set({ userActions: response.data.actions, pagination: response.data.meta });
         } catch (error) {
             
@@ -216,7 +216,7 @@ export const useUserStore = create(
       createUser: async (data) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.post('api/v1/users', data));
+          const response = await get()._handleApiCall(() => client.post('/users', data));
           return response.data.user;
         } catch (error) {
          return undefined;
@@ -226,7 +226,7 @@ export const useUserStore = create(
       updateUser: async (userId, data) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.patch(`api/v1/users/${userId}`, data));
+          const response = await get()._handleApiCall(() => client.patch(`/users/${userId}`, data));
           get()._updateUserState(response);
           return true;
         } catch (error) {
@@ -237,7 +237,7 @@ export const useUserStore = create(
       updateUserDetails: async (userId, data) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.patch(`api/v1/users/${userId}/update_details`, data));
+          const response = await get()._handleApiCall(() => client.patch(`/users/${userId}/update_details`, data));
           get()._updateUserState(response);
           return true;
         } catch (error) {
@@ -248,7 +248,7 @@ export const useUserStore = create(
       updateUserLocation: async (userId, data) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.patch(`api/v1/users/${userId}/update_location`, data));
+          const response = await get()._handleApiCall(() => client.patch(`/users/${userId}/update_location`, data));
           get()._updateUserState(response);
           return true;
         } catch (error) {
@@ -259,7 +259,7 @@ export const useUserStore = create(
       updateEntrepreneurDetails: async (userId, data) => {
         const { client } = useApiStore.getState();
         try {
-          const response = await get()._handleApiCall(() => client.patch(`api/v1/users/${userId}/update_entrepreneur_details`, data));
+          const response = await get()._handleApiCall(() => client.patch(`/users/${userId}/update_entrepreneur_details`, data));
           get()._updateUserState(response);
           return true;
         } catch (error) {
@@ -270,7 +270,7 @@ export const useUserStore = create(
       updateUserRole: async (userId, role) => {
           const { client } = useApiStore.getState();
           try {
-              const response = await get()._handleApiCall(() => client.patch(`api/v1/users/${userId}/role/update`, { role }));
+              const response = await get()._handleApiCall(() => client.patch(`/users/${userId}/role/update`, { role }));
               get()._updateUserState(response);
               return true;
           } catch (error) {
@@ -281,7 +281,7 @@ export const useUserStore = create(
       deleteUser: async (userId) => {
         const { client } = useApiStore.getState();
         try {
-          await get()._handleApiCall(() => client.delete(`api/v1/users/${userId}`));
+          await get()._handleApiCall(() => client.delete(`/users/${userId}`));
           set(state => ({
             users: state.users.filter(u => u.id !== userId),
           }));

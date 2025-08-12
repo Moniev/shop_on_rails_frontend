@@ -91,7 +91,7 @@ export const usePaymentStore = create((set, get) => ({
   fetchPayments: async (page = 1) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.get('api/v1/payments', { params: { page } }));
+      const response = await get()._handleApiCall(() => client.get('/payments', { params: { page } }));
       set({
         payments: response.data.payments,
         pagination: response.data.meta,
@@ -104,7 +104,7 @@ export const usePaymentStore = create((set, get) => ({
   fetchPayment: async (paymentId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.get(`api/v1/payments/${paymentId}`));
+      const response = await get()._handleApiCall(() => client.get(`/payments/${paymentId}`));
       set({ selectedPayment: response.data.payment });
     } catch (error) {
 
@@ -115,7 +115,7 @@ export const usePaymentStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     const body = { order_id: orderId, payment_method: method };
     try {
-      const response = await get()._handleApiCall(() => client.post('api/v1/payments', body));
+      const response = await get()._handleApiCall(() => client.post('/payments', body));
       const newPayment = response.data.payment;
       set({ selectedPayment: newPayment });
       
@@ -131,7 +131,7 @@ export const usePaymentStore = create((set, get) => ({
   retryPayment: async (paymentId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post(`api/v1/payments/${paymentId}/retry`));
+      const response = await get()._handleApiCall(() => client.post(`/payments/${paymentId}/retry`));
       const updatedPayment = response.data.payment;
 
       set(state => ({

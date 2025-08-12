@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useApiStore } from '../store/ApiStore';
+import { toast } from 'react-toastify'; 
 
 const apiClient = axios.create({
   baseURL: import.meta.env.VITE_API_ADDRESS || 'http://localhost:3000/api/v1',
@@ -30,7 +31,7 @@ apiClient.interceptors.response.use(
       const { useAuthStore } = await import('../store/AuthStore'); 
       useAuthStore.getState().logout();
     } else if (error.response && error.response.status === 429) {
-      toast.error('Please wait a moment before trying again.');
+      toast.error(`Damn son! isn't it enough?`);
     }
     
     return Promise.reject(error.response ? error.response.data : error);

@@ -117,7 +117,7 @@ export const useProductStore = create((set, get) => ({
   fetchProducts: async (page = 1, otherParams = {}) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.get('api/v1/products', { params: { page, ...otherParams } }));
+      const response = await get()._handleApiCall(() => client.get('/products', { params: { page, ...otherParams } }));
       set({
         products: response.data.products,
         pagination: response.data.meta,
@@ -130,7 +130,7 @@ export const useProductStore = create((set, get) => ({
   fetchProduct: async (productId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.get(`api/v1/products/${productId}`));
+      const response = await get()._handleApiCall(() => client.get(`/products/${productId}`));
       set({ selectedProduct: response.data.product });
     } catch (error) {
      
@@ -140,7 +140,7 @@ export const useProductStore = create((set, get) => ({
   createProduct: async (formData) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post('api/v1/products', formData));
+      const response = await get()._handleApiCall(() => client.post('/products', formData));
       return response.data.product;
     } catch (error) {
       return undefined;
@@ -150,7 +150,7 @@ export const useProductStore = create((set, get) => ({
   updateProduct: async (productId, formData) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.patch(`api/v1/products/${productId}`, formData));
+      const response = await get()._handleApiCall(() => client.patch(`/products/${productId}`, formData));
       get()._updateProductState(response.data.product);
       return true;
     } catch (error) {
@@ -161,7 +161,7 @@ export const useProductStore = create((set, get) => ({
   deleteProduct: async (productId) => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => client.delete(`api/v1/products/${productId}`));
+      await get()._handleApiCall(() => client.delete(`/products/${productId}`));
       set(state => ({
         products: state.products.filter(p => p.id !== productId),
       }));
@@ -174,7 +174,7 @@ export const useProductStore = create((set, get) => ({
   likeProduct: async (productId) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/like`));
+      const response = await get()._handleApiCall(() => client.post(`/products/${productId}/like`));
       get()._updateProductState(response.data.product);
       return true;
     } catch (error) {
@@ -185,7 +185,7 @@ export const useProductStore = create((set, get) => ({
   rateProduct: async (productId, rating) => {
     const { client } = useApiStore.getState();
     try {
-      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/rate`, { rating }));
+      const response = await get()._handleApiCall(() => client.post(`/products/${productId}/rate`, { rating }));
       get()._updateProductState(response.data.product);
       return true;
     } catch (error) {
@@ -197,7 +197,7 @@ export const useProductStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     const body = { content, parent_id: parentId };
     try {
-      const response = await get()._handleApiCall(() => client.post(`api/v1/products/${productId}/comment`, body));
+      const response = await get()._handleApiCall(() => client.post(`/products/${productId}/comment`, body));
       get()._updateProductState(response.data.product);
       return true;
     } catch (error) {

@@ -64,7 +64,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       const data = await get()._handleApiCall(() => 
-        client.post('api/v1/auth/login', credentials)
+        client.post('/auth/login', credentials)
       );
 
       await get()._handleLoginSuccess(data);
@@ -84,7 +84,7 @@ export const useAuthStore = create((set, get) => ({
 
     try {
 
-      await client.post('api/v1/users/logout');
+      await client.post('/users/logout');
     } catch (error) {
     }
   },
@@ -93,7 +93,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       await get()._handleApiCall(() => 
-        client.post('api/v1/users', { user: userData })
+        client.post('/users', { user: userData })
       );
       return true;
     } catch (error) {
@@ -105,7 +105,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       const data = await get()._handleApiCall(() => 
-        client.patch('api/v1/auth/activate', { activation_token })
+        client.patch('/auth/activate', { activation_token })
       );
       if (data.user) {
         useUserStore.getState()._updateUserState({ user: data.user });
@@ -120,7 +120,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       await get()._handleApiCall(() => 
-        client.post('api/v1/auth/password/reset', { email })
+        client.post('/auth/password/reset', { email })
       );
       return true;
     } catch (error) {
@@ -132,7 +132,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       await get()._handleApiCall(() => 
-        client.patch('api/v1/auth/password/reset', resetData)
+        client.patch('/auth/password/reset', resetData)
       );
       return true;
     } catch(error) {
@@ -144,7 +144,7 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       const data = await get()._handleApiCall(() => 
-        client.post('api/v1/auth/verify_2fa', { two_factor_code })
+        client.post('/auth/verify_2fa', { two_factor_code })
       );
       get()._handleLoginSuccess(data);
       return true;
