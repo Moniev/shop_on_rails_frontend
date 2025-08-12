@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { Outlet } from "react-router-dom";
 import Container from "../../atoms/container/Container";
 import Navbar from "../../molecules/navbar/Navbar";

@@ -19,7 +19,6 @@ const ResetPasswordForm = () => {
     }),
     onSubmit: (values, { setSubmitting }) => {
       setSubmitting(false);
-      alert("Password reset link sent! (Check the console for the email).");
       closeModal();
     },
   });
@@ -75,7 +74,7 @@ const ResetPasswordForm = () => {
         </div>
 
         <Button type="submit" variant="submit" disabled={formik.isSubmitting}>
-          Send Reset Link
+          Send!
         </Button>
       </form>
 
