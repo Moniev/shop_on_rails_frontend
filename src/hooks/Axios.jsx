@@ -29,7 +29,6 @@ apiClient.interceptors.response.use(
   async (error) => { 
     if (error.response && error.response.status === 401) {
       const { useAuthStore } = await import('../store/AuthStore'); 
-      useAuthStore.getState().logout();
     } else if (error.response && error.response.status === 429) {
       toast.error(`Damn son! isn't it enough?`);
     }
