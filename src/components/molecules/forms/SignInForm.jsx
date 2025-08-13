@@ -29,17 +29,24 @@ const SignInForm = () => {
       rememberMe: Yup.boolean(),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const success = await login({
+      const response = await login({
         mail: values.email,
         password: values.password,
       });
-      
-      if (success) {
-        toast.success("Logged in successfully!");
-        closeModal(); 
+
+      if (response && response.success) {
+        if (response.status === 202) {
+          toast.info("Sending second factor!");
+          closeModal();
+          openModal('verify2fa', { email: values.email });
+        } else {
+          toast.success("Logged in successfully!");
+          closeModal();
+        }
       } else {
+        closeModal();
         const apiError = useAuthStore.getState().error;
-        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Please check your credentials.";
+        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Adjust your data.";
         toast.error(errorMessage);
       }
       setSubmitting(false);
@@ -66,12 +73,8 @@ const SignInForm = () => {
   };
 
   const getIconClassName = (field) => {
-    if (formik.touched[field] && formik.errors[field]) {
-      return "is-error";
-    }
-    if (formik.touched[field] && !formik.errors[field]) {
-      return "is-success";
-    }
+    if (formik.touched[field] && formik.errors[field]) return "is-error";
+    if (formik.touched[field] && !formik.errors[field]) return "is-success";
     return "";
   };
 
@@ -79,7 +82,7 @@ const SignInForm = () => {
     <div className="sign-in-form__container">
        <Button
         onClick={closeModal}
-        variant="submit md circle modal-close-button" 
+        variant="submit md circle modal-close-button"
       >
         <FaTimes />
       </Button>
@@ -101,7 +104,7 @@ const SignInForm = () => {
               value={formik.values.email}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              onFocus={handleFocus} 
+              onFocus={handleFocus}
             />
           </div>
         </div>
@@ -121,7 +124,7 @@ const SignInForm = () => {
               value={formik.values.password}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
-              onFocus={handleFocus} 
+              onFocus={handleFocus}
             />
           </div>
         </div>
@@ -167,7 +170,7 @@ const SignInForm = () => {
       </div>
 
       <div className="sign-in-form__footer">
-        <p>Don't have an account? 
+        <p>Don't have an account?
           <a onClick={handleSwitchToSignUp} className="sign-in-form__link">
              Sign Up
           </a>

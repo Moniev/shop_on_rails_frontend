@@ -8,8 +8,8 @@ import * as Yup from "yup";
 import "./SignInForm.scss"; 
 
 const ResetPasswordForm = () => {
-  const { closeModal, openModal } = useModalStore();
-  const requestPasswordReset = useAuthStore((state) => state.requestPasswordReset);
+  const { openModal, closeModal } = useModalStore(); 
+  const sendPasswordResetCode = useAuthStore((state) => state.requestPasswordReset); 
   const loading = useAuthStore((state) => state.loading);
   const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
 
@@ -22,14 +22,15 @@ const ResetPasswordForm = () => {
         .email("Invalid email address")
         .required("Email is required"),
     }),
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
-      const success = await requestPasswordReset(values.email);
-      if (success) {
-        toast.success("Reset link sent! Please check your email.");
-        resetForm();
+    onSubmit: async (values, { setSubmitting }) => {
+      const response = await sendPasswordResetCode(values.email);
+      if (response && response.success) {
+        toast.success("A password reset code has been sent. Please check your email.");
+        closeModal();
+        openModal('enterResetCode', { email: values.email });
       } else {
         const apiError = useAuthStore.getState().error;
-        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Failed to send reset link. Please try again.";
+        const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Failed to send the code. Please try again.";
         toast.error(errorMessage);
       }
       setSubmitting(false);
@@ -44,16 +45,13 @@ const ResetPasswordForm = () => {
   };
 
   const handleSwitchToSignIn = () => {
+    closeModal();
     openModal('signIn');
   };
 
   const getIconClassName = (field) => {
-    if (formik.touched[field] && formik.errors[field]) {
-      return "is-error";
-    }
-    if (formik.touched[field] && !formik.errors[field]) {
-      return "is-success";
-    }
+    if (formik.touched[field] && formik.errors[field]) return "is-error";
+    if (formik.touched[field] && !formik.errors[field]) return "is-success";
     return "";
   };
 
@@ -69,7 +67,7 @@ const ResetPasswordForm = () => {
 
       <form onSubmit={formik.handleSubmit} className="sign-in-form__form">
         <p className="sign-in-form__description">
-          Enter your email address and we will send you a link to reset your password.
+          Enter your email address, and we will send you a code to reset your password.
         </p>
         <div className="sign-in-form__group">
           <label htmlFor="email" className="sign-in-form__label">
@@ -90,9 +88,9 @@ const ResetPasswordForm = () => {
             />
           </div>
         </div>
-
+        
         <Button type="submit" variant="submit" disabled={formik.isSubmitting || loading}>
-          {loading ? 'Sending...' : 'Send Reset Link'}
+          {loading ? 'Sending...' : 'Send Reset Code'}
         </Button>
       </form>
 

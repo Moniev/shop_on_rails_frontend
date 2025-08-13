@@ -34,7 +34,7 @@ const SignUpForm = () => {
         .oneOf([Yup.ref('password'), null], "Passwords must match")
         .required("Password confirmation is required"),
     }),
-    onSubmit: async (values, { setSubmitting, resetForm }) => {
+    onSubmit: async (values, { setSubmitting }) => {
       const payload = {
         mail: values.email,
         password: values.password,
@@ -48,7 +48,8 @@ const SignUpForm = () => {
 
       if (success) {
         toast.success("Account created! Please check your email to activate it.");
-        resetForm();
+        closeModal();
+        openModal('activateAccount', { email: values.email });
       } else {
         const apiError = useAuthStore.getState().error;
         const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Registration failed. Please try again.";

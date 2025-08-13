@@ -107,9 +107,6 @@ export const useAuthStore = create((set, get) => ({
       const data = await get()._handleApiCall(() => 
         client.patch('/auth/activate', { activation_token })
       );
-      if (data.user) {
-        useUserStore.getState()._updateUserState({ user: data.user });
-      }
       return true;
     } catch (error) {
       return false;

@@ -8,14 +8,38 @@ import Footer from "../../molecules/footer/Footer";
 import { useUserStore } from "../../../store/UserStore"; 
 import SignInContainer from "../../molecules/formContainers/SignInContainer"; 
 import SignUpContainer from "../../molecules/formContainers/SignUpContainer"; 
+import Verify2faContainer from "../../molecules/formContainers/Verify2faContainer"; 
 import ResetPasswordContainer from "../../molecules/formContainers/ResetPasswordContainer"; 
+import EnterResetCodeContainer from "../../molecules/formContainers/EnterResetCodeForm";
+import CreateNewPasswordContainer from "../../molecules/formContainers/CreateNewPasswordContainer";
+import ActivateAccountContainer from "../../molecules/formContainers/ActivateAccountContainer";
 import Modal from "../../atoms/modal/Modal"; 
 import { useModalStore } from "../../../store/ModalStore";
 import "./Layout.scss";
 
 const Layout = () => {
   const currentUser = useUserStore((state) => state.currentUser);
-  const { isOpen, content, closeModal } = useModalStore();
+  const { isOpen, modalType, modalProps, closeModal } = useModalStore();
+  const renderModalContent = () => {
+    switch (modalType) {
+      case 'signIn':
+        return <SignInContainer {...modalProps} />;
+      case 'signUp':
+        return <SignUpContainer {...modalProps} />;
+      case 'activateAccount':
+        return <ActivateAccountContainer {...modalProps} />;
+      case 'resetPassword': 
+        return <ResetPasswordContainer {...modalProps} />;
+      case 'enterResetCode':
+        return <EnterResetCodeContainer {...modalProps} />;
+      case 'createNewPassword':
+        return <CreateNewPasswordContainer {...modalProps} />;
+      case 'verify2fa':
+        return <Verify2faContainer {...modalProps} />;
+      default:
+        return null;
+    }
+  };
 
   return (
     <div className="layout-wrapper">
@@ -42,9 +66,7 @@ const Layout = () => {
         <Footer />
       </div>
       <Modal isOpen={isOpen} onClose={closeModal}>
-        {content === 'signIn' && <SignInContainer />}
-        {content === 'signUp' && <SignUpContainer />}
-        {content === 'resetPassword' && <ResetPasswordContainer />}
+        {renderModalContent()}
       </Modal>
     </div>
   );

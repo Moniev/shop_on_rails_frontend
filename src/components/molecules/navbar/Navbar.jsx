@@ -3,20 +3,19 @@ import Logo from "../../atoms/logo/Logo";
 import Button from "../../atoms/button/Button";
 import Container from "../../atoms/container/Container";
 import { useState, useEffect } from "react";
-import { Link } from "react-router-dom"; 
-import {  FaSearch, FaSignInAlt, FaUserPlus } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { FaSignInAlt, FaUserPlus } from "react-icons/fa"; 
 import { useModalStore } from "../../../store/ModalStore";
 import "./Navbar.scss";
 
-
-const Navbar = ({ onSignInClick, onSignUpClick }) => {
+const Navbar = () => {
   const { openModal } = useModalStore();
   const [isDropdownOpen, setDropdownOpen] = useState(false);
   const [isVisible, setIsVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
 
   const navLinks = [
-    { text: "About", href: "/about"  },
+    { text: "About", href: "/about" },
   ];
 
   useEffect(() => {
@@ -50,11 +49,13 @@ const Navbar = ({ onSignInClick, onSignUpClick }) => {
                 </Link>
               ))}
               <Container>
-                <Button onClick={onSignUpClick} variant="secondary md">
+                <Button onClick={() => openModal('signUp')} variant="secondary md">
                   <FaUserPlus className="mr-2 text-xl" />
+                  <span>Sign Up</span>
                 </Button>
-                <Button onClick={onSignInClick} variant="primary md">
+                <Button onClick={() => openModal('signIn')} variant="primary md">
                   <FaSignInAlt className="mr-2 text-xl" />
+                  <span>Sign In</span>
                 </Button>
               </Container>
             </div>
@@ -69,13 +70,15 @@ const Navbar = ({ onSignInClick, onSignUpClick }) => {
           </Link>
         ))}
         <div className="navbar__divider" />
-        <Button onClick={() => openModal('signIn')} variant="submit md">
-          <FaUserPlus className="mr-2"/>
-          <span></span>
-        </Button>
+        
         <Button onClick={() => openModal('signUp')} variant="submit md">
+          <FaUserPlus className="mr-2"/>
+          <span>Sign Up</span>
+        </Button>
+        
+        <Button onClick={() => openModal('signIn')} variant="submit md">
           <FaSignInAlt className="mr-2"/>
-          <span></span>
+          <span>Sign In</span>
         </Button>
       </div>
     </nav>
