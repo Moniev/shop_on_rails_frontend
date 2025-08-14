@@ -121,7 +121,6 @@ export const useAuthStore = create((set, get) => ({
       const response = await get()._handleApiCall(() => 
         client.post('/auth/password/reset', { mail: email })
       );
-      console.log(response)
       return response;
     } catch (error) {
       return false;
