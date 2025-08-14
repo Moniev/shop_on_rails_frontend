@@ -10,15 +10,15 @@ import { useEffect } from "react";
 
 const Verify2faForm = () => {
   const { closeModal, modalProps } = useModalStore();
-  const email = modalProps?.email; 
+  const email = modalProps?.email;  
 
   const verifyTwoFactor = useAuthStore((state) => state.verifyTwoFactor);
   const loading = useAuthStore((state) => state.loading);
   const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
 
-  useEffect(() => {
+   useEffect(() => {
     if (!email) {
-      toast.error("An error occurred. Please try to log in again.");
+      toast.error("An error occurred (Email missing). Please try to log in again.");
       closeModal();
     }
   }, [email, closeModal]);
@@ -31,12 +31,12 @@ const Verify2faForm = () => {
     validationSchema: Yup.object({
       secondFactorCode: Yup.string()
         .matches(/^[0-9]+$/, "The code must only contain digits")
-        .length(6, "The code must be exactly 6 digits")
+        .length(8, "The code must be exactly 6 digits")
         .required("The code is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const success = await verifyTwoFactor(email, values.secondFactorCode);
-      if (success) {
+      const response = await verifyTwoFactor(email, values.secondFactorCode);
+      if (response && response.data.success) {
         toast.success("Logged in successfully!");
         closeModal(); 
       } else {
@@ -74,7 +74,7 @@ const Verify2faForm = () => {
 
       <form onSubmit={formik.handleSubmit} className="sign-in-form__form">
         <p className="sign-in-form__description">
-          Enter the 8-digit code from your authenticator app.
+          Enter your 8-digit code.
         </p>
         <div className="sign-in-form__group">
           <label htmlFor="secondFactorCode" className="sign-in-form__label">
@@ -87,12 +87,12 @@ const Verify2faForm = () => {
               name="secondFactorCode"
               id="secondFactorCode"
               className={`sign-in-form__input ${getIconClassName('secondFactorCode')}`}
-              placeholder={formik.touched.secondFactorCode && formik.errors.secondFactorCode ? formik.errors.secondFactorCode : "123456"}
+              placeholder={formik.touched.secondFactorCode && formik.errors.secondFactorCode ? formik.errors.secondFactorCode : "123456aB"}
               value={formik.values.secondFactorCode}
               onChange={formik.handleChange}
               onBlur={formik.handleBlur}
               onFocus={handleFocus}
-              maxLength={6}
+              maxLength={8}
               autoComplete="one-time-code" 
             />
           </div>

@@ -33,18 +33,17 @@ const SignInForm = () => {
         mail: values.email,
         password: values.password,
       });
-
-      if (response && response.success) {
+      
+      if (response && response.data?.success) {
         if (response.status === 202) {
           toast.info("Sending second factor!");
           closeModal();
           openModal('verify2fa', { email: values.email });
-        } else {
+        } else if (response.status == 200 ){
           toast.success("Logged in successfully!");
           closeModal();
         }
       } else {
-        closeModal();
         const apiError = useAuthStore.getState().error;
         const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Adjust your data.";
         toast.error(errorMessage);

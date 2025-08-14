@@ -11,13 +11,13 @@ import { useUserStore } from './UserStore';
 
 /**
  * @typedef {Object} AuthActions
- * @property {(credentials: Object) => Promise<boolean>} login - Logs the user in.
+ * @property {(credentials: Object) => Promise<Object|boolean>} login - Logs the user in.
  * @property {(userData: Object) => Promise<boolean>} register - Registers a new user.
  * @property {() => Promise<void>} logout - Logs the user out.
- * @property {(token: string) => Promise<boolean>} activateAccount - Activates an account using a token.
+ * @property {(email: string, activationCode: string) => Promise<boolean>} activateAccount - Activates an account using a code.
  * @property {(email: string) => Promise<boolean>} requestPasswordReset - Sends a password reset email.
  * @property {(data: Object) => Promise<boolean>} confirmPasswordReset - Confirms password reset with a token.
- * @property {(code: string) => Promise<boolean>} verifyTwoFactor - Verifies a 2FA code.
+ * @property {(code: string) => Promise<Object|boolean>} verifyTwoFactor - Verifies a 2FA code.
  * @property {() => void} clearAuthStatus - Clears error and message fields.
  */
 
@@ -35,12 +35,12 @@ export const useAuthStore = create((set, get) => ({
     set({ loading: true, error: null, message: null });
     try {
       const response = await apiCall();
-      if (response.message) {
-        set({ message: response.message });
+      if (response.data.message) {
+        set({ message: response.data.message });
       }
-      return response.data;
+      return { data: response.data, status: response.status, message: response.data.message };
     } catch (error) {
-      const errorMessages = error.errors || error.message || 'An unknown authentication error occurred.';
+      const errorMessages = error.response?.data?.errors || error.message || 'An unknown authentication error occurred.';
       set({ error: errorMessages });
       throw new Error(Array.isArray(errorMessages) ? errorMessages.join(', ') : errorMessages);
     } finally {
@@ -48,66 +48,69 @@ export const useAuthStore = create((set, get) => ({
     }
   },
   
-  _handleLoginSuccess: async (data) => {
-    if (!data || !data.token) {
+  _handleLoginSuccess: async (response) => {
+    const token = response?.data?.data?.token;
+    if (token == null) {
       throw new Error('API response is missing token.');
     }
     const { setToken } = useApiStore.getState();
     const { fetchCurrentUser } = useUserStore.getState();
-    
-    setToken(data.token);
-
+    setToken(token);
     await fetchCurrentUser();
   },
 
   login: async (credentials) => {
     const { client } = useApiStore.getState();
     try {
-      const data = await get()._handleApiCall(() => 
+      const response = await get()._handleApiCall(() => 
         client.post('/auth/login', credentials)
       );
-
-      await get()._handleLoginSuccess(data);
-      return true;
+      await get()._handleLoginSuccess(response);
+      console.log(response)
+      return response;
     } catch (error) {
       return false;
     }
   },
 
-  logout: async () => {
+   logout: async () => {
     const { client, setToken } = useApiStore.getState();
     const { clearCurrentUser } = useUserStore.getState();
     
-    setToken(null);
-    clearCurrentUser();
-    set({ message: 'Successfully logged out.' });
-
     try {
-
       await client.post('/users/logout');
     } catch (error) {
+    } finally {
+      setToken(null);
+      clearCurrentUser();
+      set({ message: 'Successfully logged out.' });
     }
   },
 
   register: async (userData) => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => 
+      const response = await get()._handleApiCall(() => 
         client.post('/users', { user: userData })
       );
-      return true;
+      return response;
     } catch (error) {
       return false;
     }
   },
   
-  activateAccount: async (activation_token) => {
+  activateAccount: async (email, activationCode) => {
     const { client } = useApiStore.getState();
     try {
-      const data = await get()._handleApiCall(() => 
-        client.patch('/auth/activate', { activation_token })
+      const payload = { 
+        mail: email, 
+        activation_code: activationCode 
+      };
+      
+      const response = await get()._handleApiCall(() => 
+        client.patch('/auth/activate', payload)
       );
-      return true;
+      return response.success;
     } catch (error) {
       return false;
     }
@@ -116,10 +119,10 @@ export const useAuthStore = create((set, get) => ({
   requestPasswordReset: async (email) => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => 
+      const response = await get()._handleApiCall(() => 
         client.post('/auth/password/reset', { email })
       );
-      return true;
+      return response.success;
     } catch (error) {
       return false;
     }
@@ -128,23 +131,25 @@ export const useAuthStore = create((set, get) => ({
   confirmPasswordReset: async (resetData) => {
     const { client } = useApiStore.getState();
     try {
-      await get()._handleApiCall(() => 
+      const response = await get()._handleApiCall(() => 
         client.patch('/auth/password/reset', resetData)
       );
-      return true;
+      return response.success;
     } catch(error) {
       return false;
     }
   },
 
-  verifyTwoFactor: async (two_factor_code) => {
+  verifyTwoFactor: async (email, code) => {
     const { client } = useApiStore.getState();
     try {
-      const data = await get()._handleApiCall(() => 
-        client.post('/auth/verify_2fa', { two_factor_code })
+      const response = await get()._handleApiCall(() => 
+        client.post('/auth/verify_2fa', { mail: email, second_factor_code: code })
       );
-      get()._handleLoginSuccess(data);
-      return true;
+
+      await get()._handleLoginSuccess(response);
+      
+      return response;
     } catch (error) {
       return false;
     }

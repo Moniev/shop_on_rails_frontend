@@ -24,7 +24,9 @@ const EnterResetCodeForm = () => {
       resetCode: "",
     },
     validationSchema: Yup.object({
-      resetCode: Yup.string().required("Code is required"),
+      resetCode: Yup.string()
+        .min(8, "Reset code must be 8 characters long")
+        .required("Code is required"),
     }),
     onSubmit: (values) => {
       closeModal();

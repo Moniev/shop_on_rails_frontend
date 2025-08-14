@@ -24,16 +24,18 @@ apiClient.interceptors.request.use(
 
 apiClient.interceptors.response.use(
   (response) => {
-    return response.data;
+    return response;
   },
   async (error) => { 
-    if (error.response && error.response.status === 401) {
-      const { useAuthStore } = await import('../store/AuthStore'); 
-    } else if (error.response && error.response.status === 429) {
-      toast.error(`Damn son! isn't it enough?`);
+    if (error.response) {
+      if (error.response.status === 401) {
+
+      } else if (error.response.status === 429) {
+        toast.error("Too many requests. Please wait a moment.");
+      }
     }
     
-    return Promise.reject(error.response ? error.response.data : error);
+    return Promise.reject(error);
   }
 );
 
