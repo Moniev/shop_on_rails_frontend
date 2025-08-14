@@ -1,4 +1,4 @@
-import CreateNewPasswordForm from "../forms/EnterResetCodeForm";
+import CreateNewPasswordForm from "../forms/CreateNewPasswordForm";
 import "./SignContainer.scss";
 
 const CreateNewPasswordContainer = () => {

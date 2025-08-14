@@ -119,9 +119,10 @@ export const useAuthStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
       const response = await get()._handleApiCall(() => 
-        client.post('/auth/password/reset', { email })
+        client.post('/auth/password/reset', { mail: email })
       );
-      return response.success;
+      console.log(response)
+      return response;
     } catch (error) {
       return false;
     }
@@ -133,7 +134,8 @@ export const useAuthStore = create((set, get) => ({
       const response = await get()._handleApiCall(() => 
         client.patch('/auth/password/reset', resetData)
       );
-      return response.success;
+      return response;
+      
     } catch(error) {
       return false;
     }
