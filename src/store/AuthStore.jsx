@@ -38,7 +38,7 @@ export const useAuthStore = create((set, get) => ({
       if (response.data.message) {
         set({ message: response.data.message });
       }
-      return { data: response.data, status: response.status, message: response.data.message };
+      return response
     } catch (error) {
       const errorMessages = error.response?.data?.errors || error.message || 'An unknown authentication error occurred.';
       set({ error: errorMessages });
@@ -66,7 +66,6 @@ export const useAuthStore = create((set, get) => ({
         client.post('/auth/login', credentials)
       );
       await get()._handleLoginSuccess(response);
-      console.log(response)
       return response;
     } catch (error) {
       return false;
@@ -110,7 +109,7 @@ export const useAuthStore = create((set, get) => ({
       const response = await get()._handleApiCall(() => 
         client.patch('/auth/activate', payload)
       );
-      return response.success;
+      return response;
     } catch (error) {
       return false;
     }

@@ -32,9 +32,9 @@ const ActivateAccountForm = () => {
       activationCode: Yup.string().required("Activation code is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const success = await activateAccount(email, values.activationCode);
-      if (success) {
-        toast.success("Your account has been successfully activated! You can now log in.");
+      const response = await activateAccount(email, values.activationCode);
+      if (response && response.data?.success) {
+        toast.success("Your account has been successfully activated!");
         openModal('signIn'); 
       } else {
         const apiError = useAuthStore.getState().error;
