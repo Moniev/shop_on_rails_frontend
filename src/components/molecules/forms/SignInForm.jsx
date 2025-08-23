@@ -46,7 +46,7 @@ const SignInForm = () => {
       } else {
         const apiError = useAuthStore.getState().error;
         const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Adjust your data.";
-        toast.error(errorMessage);
+        toast.error( errorMessage);
       }
 
       setSubmitting(false);

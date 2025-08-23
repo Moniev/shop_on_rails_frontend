@@ -44,9 +44,9 @@ const SignUpForm = () => {
         },
       };
 
-      const success = await register(payload);
+      const response = await register(payload);
 
-      if (success) {
+      if (response?.success) {
         toast.success("Account created! Please check your email to activate it.");
         closeModal();
         openModal('activateAccount', { email: values.email });

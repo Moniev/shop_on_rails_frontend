@@ -39,6 +39,7 @@ const UserDashboard = () => {
           {currentUser && (
             <div className="dashboard-sidebar__user-info">
               <span className="truncate">Welcome, {currentUser.user_detail?.first_name || currentUser.mail}!</span>
+              {!currentUser.verified && <span className="truncate">Your phone is not verified.</span>}
             </div>
           )}
           <ul className="dashboard-sidebar__nav-list">

@@ -38,12 +38,13 @@ const CreateNewPasswordForm = () => {
         .required("Password confirmation is required")
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const success = await resetPasswordWithCode({
+      const response = await resetPasswordWithCode({
         reset_code: resetCode,
         password: values.password,
         password_confirmation: values.passwordConfirmation
       });
-      if (success) {
+
+      if (response?.success) {
         toast.success("Password has been changed successfully! You can now log in.");
         openModal('signIn'); 
       } else {

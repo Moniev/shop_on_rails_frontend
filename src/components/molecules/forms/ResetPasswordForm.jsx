@@ -24,7 +24,7 @@ const ResetPasswordForm = () => {
     }),
     onSubmit: async (values, { setSubmitting }) => {
       const response = await sendPasswordResetCode(values.email);
-      if (response && response.status == 200) {
+      if (response?.success) {
         toast.success("A password reset code has been sent. Please check your email.");
         closeModal();
         openModal('enterResetCode', { email: values.email });
