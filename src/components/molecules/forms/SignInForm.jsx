@@ -29,25 +29,26 @@ const SignInForm = () => {
       rememberMe: Yup.boolean(),
     }),
     onSubmit: async (values, { setSubmitting }) => {
-      const response = await login({
+      const result = await login({
         mail: values.email,
         password: values.password,
       });
-      
-      if (response && response.data?.success) {
-        if (response.status === 202) {
-          toast.info("Sending second factor!");
-          closeModal();
-          openModal('verify2fa', { email: values.email });
-        } else if (response.status == 200 ){
-          toast.success("Logged in successfully!");
-          closeModal();
-        }
+
+      if (result?.twoFactorRequired) {
+        const apiMessage = useAuthStore.getState().message;
+        toast.info(apiMessage || "Verification required.");
+        closeModal();
+        openModal('verify2fa', { email: values.email });
+
+      } else if (result?.success) {
+        toast.success("Logged in successfully!");
+        closeModal();
       } else {
         const apiError = useAuthStore.getState().error;
         const errorMessage = Array.isArray(apiError) ? apiError.join(', ') : apiError || "Login failed. Adjust your data.";
         toast.error(errorMessage);
       }
+
       setSubmitting(false);
     },
   });

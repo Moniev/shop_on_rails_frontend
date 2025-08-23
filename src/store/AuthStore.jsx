@@ -30,6 +30,7 @@ export const useAuthStore = create((set, get) => ({
   loading: false,
   error: null,
   message: null,
+  twoFactorRequired: false,
 
   _handleApiCall: async (apiCall) => {
     set({ loading: true, error: null, message: null });
@@ -38,11 +39,11 @@ export const useAuthStore = create((set, get) => ({
       if (response.data.message) {
         set({ message: response.data.message });
       }
-      return response
+      return { success: true, data: response.data };
     } catch (error) {
       const errorMessages = error.response?.data?.errors || error.message || 'An unknown authentication error occurred.';
       set({ error: errorMessages });
-      throw new Error(Array.isArray(errorMessages) ? errorMessages.join(', ') : errorMessages);
+      return { success: false, data: null };
     } finally {
       set({ loading: false });
     }
@@ -50,7 +51,8 @@ export const useAuthStore = create((set, get) => ({
   
   _handleLoginSuccess: async (response) => {
     const token = response?.data?.data?.token;
-    if (token == null) {
+    if (!token) {
+      set({ error: 'Login successful, but no token was provided by the server.' });
       throw new Error('API response is missing token.');
     }
     const { setToken } = useApiStore.getState();
@@ -60,24 +62,38 @@ export const useAuthStore = create((set, get) => ({
   },
 
   login: async (credentials) => {
+    set({ twoFactorRequired: false }); 
     const { client } = useApiStore.getState();
-    try {
-      const response = await get()._handleApiCall(() => 
-        client.post('/auth/login', credentials)
-      );
-      await get()._handleLoginSuccess(response);
-      return response;
-    } catch (error) {
+    
+    const result = await get()._handleApiCall(() => 
+      client.post('/auth/login', credentials)
+    );
+
+    if (!result.success) {
       return false;
+    }
+
+    const isTwoFactorStep = result.data?.data?.two_factor_required === true;
+
+    if (isTwoFactorStep) {
+      set({ twoFactorRequired: true });
+      return { twoFactorRequired: true };
+    } else {
+      const loginFinalized = await get()._handleLoginSuccess({ data: result.data });
+      if (loginFinalized) {
+        return result;
+      } else {
+        return result;
+      }
     }
   },
 
-   logout: async () => {
+  logout: async () => {
     const { client, setToken } = useApiStore.getState();
     const { clearCurrentUser } = useUserStore.getState();
     
     try {
-      await client.post('/users/logout');
+      await get()._handleApiCall(() => client.post('/users/logout'));
     } catch (error) {
     } finally {
       setToken(null);
@@ -142,17 +158,18 @@ export const useAuthStore = create((set, get) => ({
 
   verifyTwoFactor: async (email, code) => {
     const { client } = useApiStore.getState();
-    try {
-      const response = await get()._handleApiCall(() => 
-        client.post('/auth/verify_2fa', { mail: email, second_factor_code: code })
-      );
-
-      await get()._handleLoginSuccess(response);
-      
-      return response;
-    } catch (error) {
-      return false;
+    const result = await get()._handleApiCall(() => 
+      client.post('/auth/verify_2fa', { mail: email, second_factor_code: code })
+    );
+    if (result.success) {
+      const loginFinalized = await get()._handleLoginSuccess(result);
+      if (loginFinalized) {
+        set({ twoFactorRequired: false }); 
+        return result;
+      }
     }
+    
+    return result;
   },
 
   clearAuthStatus: () => {

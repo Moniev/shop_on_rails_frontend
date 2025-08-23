@@ -47,6 +47,11 @@ export const useCartStore = create((set, get) => ({
   loading: false,
   error: null,
   message: null,
+  
+  isOpen: false,
+  openCart: () => set({ isOpen: true }),
+  closeCart: () => set({ isOpen: false }),
+  toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
 
   _updateCartState: (response) => {
     const cartData = response.data;

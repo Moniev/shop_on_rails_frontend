@@ -30,13 +30,13 @@ const Verify2faForm = () => {
     },
     validationSchema: Yup.object({
       secondFactorCode: Yup.string()
-        .matches(/^[0-9]+$/, "The code must only contain digits")
-        .length(8, "The code must be exactly 6 digits")
+        .matches(/^[a-zA-Z0-9]+$/, "The code must only contain digits")
+        .length(8, "The code must be exactly 8 digits")
         .required("The code is required"),
     }),
     onSubmit: async (values, { setSubmitting }) => {
       const response = await verifyTwoFactor(email, values.secondFactorCode);
-      if (response && response.data.success) {
+      if (response && response.success) {
         toast.success("Logged in successfully!");
         closeModal(); 
       } else {

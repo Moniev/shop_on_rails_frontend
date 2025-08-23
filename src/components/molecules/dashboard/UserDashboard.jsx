@@ -3,7 +3,8 @@ import { NavLink, useNavigate } from 'react-router-dom';
 import { useUserStore } from '../../../store/UserStore';
 import Hamburger from '../navbar/Hamburger';
 import './_Dashboard.scss'; 
-import { FaUserCircle, FaBoxOpen, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaUserCircle, FaBoxOpen, FaBell, FaCog, FaShoppingCart } from 'react-icons/fa';
+import { MdPayments } from "react-icons/md";
 import NavItem from '../../atoms/navItem/NavItem';
 
 const UserDashboard = () => {
@@ -41,9 +42,11 @@ const UserDashboard = () => {
             </div>
           )}
           <ul className="dashboard-sidebar__nav-list">
+            <NavItem to="/user/notifications" icon={<FaBell />}>Notifications</NavItem>
+            <NavItem to="/user/cart" icon={<FaShoppingCart />}>Cart</NavItem>
             <NavItem to="/user" icon={<FaUserCircle />}>Profile</NavItem>
             <NavItem to="/user/orders" icon={<FaBoxOpen />}>My orders</NavItem>
-            <NavItem to="/user/orders" icon={<FaBoxOpen />}>Payments</NavItem>
+            <NavItem to="/user/orders" icon={<MdPayments />}>Payments</NavItem>
             <NavItem to="/user/settings" icon={<FaCog />}>Settings</NavItem>
           </ul>
         </div>
