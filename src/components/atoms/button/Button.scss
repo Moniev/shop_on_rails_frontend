@@ -26,25 +26,33 @@
     display: flex;
     align-items: center;
     gap: 0.75rem; 
-    width: 100%;
+    width: 80%;
     padding: 0.5rem 0.75rem; 
-    border-radius: 0.375rem; 
+    border-radius: 0.875rem; 
     font-size: 1rem; 
-    font-weight: 700; 
+    font-weight: bold; 
     color: rgb(158, 54, 73);
     background-color: transparent; 
     transition: all 0.3s ease-in-out;
+    text-decoration: none;
 
     &:hover {
-      color: white;
-      color: rgb(211, 20, 20);
+      color: $footer-standard-hover-text-color;
+      background-color: $button-background-color;
       text-shadow: 0 0 15px rgba(173, 14, 33, 0.904);
+      span {  
+        color: $footer-standard-hover-text-color;
+      }
     }
 
     svg {
       text-shadow: 0 0 15px rgba(173, 14, 14, 0.904);
       font-size: 1.25rem; 
       transition: color 0.3s ease-in-out;
+    }
+
+    span {  
+      color: $footer-standard-text-color;
     }
   }
 

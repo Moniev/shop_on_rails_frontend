@@ -11,7 +11,7 @@ import { useEffect } from "react";
 const Verify2faForm = () => {
   const { closeModal, modalProps } = useModalStore();
   const email = modalProps?.email;  
-
+  const resend2faCode = useAuthStore((state) => state.resendTwoFactor);
   const verifyTwoFactor = useAuthStore((state) => state.verifyTwoFactor);
   const loading = useAuthStore((state) => state.loading);
   const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
@@ -102,6 +102,13 @@ const Verify2faForm = () => {
           {loading ? 'Verifying...' : 'Verify'}
         </Button>
       </form>
+      <div className="sign-in-form__footer">
+        <p>Didn't receive code?
+          <a onClick={resend2faCode} className="sign-in-form__link">
+             Resend!
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

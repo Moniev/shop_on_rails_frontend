@@ -11,7 +11,7 @@ import { useEffect } from "react";
 const ActivateAccountForm = () => {
   const { closeModal, openModal, modalProps } = useModalStore();
   const email = modalProps?.email;
-
+  const resendActivationCode = useAuthStore((state) => state.resendActivationFactor);
   const activateAccount = useAuthStore((state) => state.activateAccount);
   const loading = useAuthStore((state) => state.loading);
   const clearAuthStatus = useAuthStore((state) => state.clearAuthStatus);
@@ -98,6 +98,13 @@ const ActivateAccountForm = () => {
           {loading ? 'Activating...' : 'Activate Account'}
         </Button>
       </form>
+       <div className="sign-in-form__footer">
+        <p>Didn't receive code?
+          <a onClick={resendActivationCode} className="sign-in-form__link">
+             Resend code!
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

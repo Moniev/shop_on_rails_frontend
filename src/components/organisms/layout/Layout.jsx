@@ -3,7 +3,8 @@ import { Outlet } from "react-router-dom";
 import Container from "../../atoms/container/Container";
 import Navbar from "../../molecules/navbar/Navbar";
 import { ToastContainer } from 'react-toastify';
-import Dashboard from "../../molecules/dashboard/Dashboard";
+import UserDashboard from "../../molecules/dashboard/UserDashboard";
+import InternalDashboard from "../../molecules/dashboard/InternalDashboard";
 import Footer from "../../molecules/footer/Footer";
 import { useUserStore } from "../../../store/UserStore"; 
 import SignInContainer from "../../molecules/formContainers/SignInContainer"; 
@@ -57,7 +58,10 @@ const Layout = () => {
       />
       <Navbar />
       <>
-        { currentUser != null ? <Dashboard /> : <></>}
+        {(currentUser?.role === 'admin' ||currentUser?.role === 'moderator' ) && <InternalDashboard/>}
+      </>
+      <>
+        { currentUser != null ? <UserDashboard/> : <></>}
       </>
       <div className="main-content-wrapper">
         <Container className="pt-32 px-4">

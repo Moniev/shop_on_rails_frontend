@@ -2,6 +2,7 @@ import Button from "../../atoms/button/Button";
 import { useFormik } from "formik";
 import { FaTimes, FaHashtag } from "react-icons/fa";
 import { useModalStore } from "../../../store/ModalStore";
+import { useAuthStore } from "../../../store/AuthStore";
 import { toast } from 'react-toastify';
 import * as Yup from "yup";
 import "./SignInForm.scss";
@@ -10,6 +11,7 @@ import { useEffect } from "react";
 const EnterResetCodeForm = () => {
   const { closeModal, openModal, modalProps } = useModalStore();
   const email = modalProps?.email;
+  const resendResetCode = useAuthStore((state) => state.requestPasswordReset);
 
   useEffect(() => {
     if (!email) {
@@ -80,11 +82,18 @@ const EnterResetCodeForm = () => {
             />
           </div>
         </div>
-
+        
         <Button type="submit" variant="submit">
           Next
         </Button>
       </form>
+      <div className="sign-in-form__footer">
+        <p>Didn't receive code?
+          <a onClick={resendResetCode} className="sign-in-form__link">
+             Resend!
+          </a>
+        </p>
+      </div>
     </div>
   );
 };
