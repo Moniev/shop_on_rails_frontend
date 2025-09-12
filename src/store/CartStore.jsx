@@ -110,7 +110,7 @@ export const useCartStore = create((set, get) => ({
     const { client } = useApiStore.getState();
     try {
         await get()._handleApiCall(() => 
-            client.patch('/cart/update', { item_id: itemId, quantity: quantity })
+          client.patch('/cart/update', { item_id: itemId, quantity: quantity })
         );
         return true;
     } catch (error) {
